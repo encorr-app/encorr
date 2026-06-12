@@ -51,6 +51,13 @@ class AppearanceSettingsScreen extends StatelessWidget {
             subtitle: t.settings.focusGlowDescription,
           ),
         if (Platform.isAndroid) _visualEffectsSelector(context),
+        // Plezy-Seerr fork: glass chrome toggle (plain literals, not in slang i18n).
+        const SettingSwitchTile(
+          pref: SettingsService.glassEffects,
+          icon: Symbols.blur_on_rounded,
+          title: 'Glass effects',
+          subtitle: 'Translucent blur behind navigation and panels',
+        ),
         SettingSwitchTile(
           pref: SettingsService.showEpisodeNumberOnCards,
           icon: Symbols.tag_rounded,

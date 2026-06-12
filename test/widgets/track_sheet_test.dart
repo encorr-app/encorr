@@ -20,6 +20,11 @@ const _testTokens = MonoTokens(
   text: Colors.white,
   textMuted: Colors.white70,
   splashFactory: NoSplash.splashFactory,
+  glassSurface: Colors.white10,
+  glassBlurSigma: 0,
+  glassBorder: Colors.white24,
+  scrimStrong: Colors.black54,
+  scrimSoft: Colors.transparent,
 );
 
 void main() {

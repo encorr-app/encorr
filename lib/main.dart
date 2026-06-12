@@ -43,6 +43,7 @@ import 'services/trakt/trakt_sync_service.dart';
 import 'services/trackers/tracker_coordinator.dart';
 import 'providers/trakt_account_provider.dart';
 import 'providers/trackers_provider.dart';
+import 'providers/seerr_provider.dart';
 import 'providers/user_profile_provider.dart';
 import 'providers/multi_server_provider.dart';
 import 'providers/theme_provider.dart';
@@ -909,6 +910,15 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                         appLogger.w('Trackers profile hydrate failed', error: e, stackTrace: s);
                       }),
                     );
+                    return provider;
+                  },
+                ),
+                // Seerr request integration — signs in with the stored Plex account
+                // token; session cookie is persisted encrypted via CredentialVault.
+                ChangeNotifierProvider(
+                  create: (context) {
+                    final provider = SeerrProvider(connections: context.read<ConnectionRegistry>());
+                    unawaited(provider.initialize());
                     return provider;
                   },
                 ),

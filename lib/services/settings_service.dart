@@ -413,6 +413,19 @@ class SettingsService extends BaseSharedPreferencesService {
   static const liveTvDefaultFavorites = BoolPref('live_tv_default_favorites');
   static const matchRefreshRate = BoolPref('match_refresh_rate');
   static const matchDynamicRange = BoolPref('match_dynamic_range');
+
+  // ---------------------------------------------------------------------
+  // Plezy-Seerr fork additions (glass UI + trailers)
+  // ---------------------------------------------------------------------
+  /// Backdrop-blur glass chrome (GlassPanel). Independent of [visualEffects]:
+  /// the reduced performance tier always disables blur regardless of this.
+  static const glassEffects = BoolPref('glass_effects', defaultValue: true);
+
+  /// Autoplay muted background trailers on detail pages.
+  static const autoPlayTrailers = BoolPref('auto_play_trailers', defaultValue: true);
+
+  /// Delay before a background trailer starts playing.
+  static const trailerDelaySeconds = IntPref('trailer_delay_seconds', defaultValue: 2);
   static const appLocale = _AppLocalePref();
   static const autoPip = _AutoPipPref();
   static const customDownloadPath = NullableStringPref('custom_download_path');
@@ -422,6 +435,12 @@ class SettingsService extends BaseSharedPreferencesService {
     'companion_remote_last_host_address',
     transform: _trimEmptyAsNull,
   );
+
+  // ─── Seerr ───────────────────────────────────────────────────────────
+  // Seerr (Overseerr successor) integration. The session cookie itself is
+  // stored separately (encrypted) by SeerrSessionStore; this is just the
+  // server URL so the settings screen can prefill it.
+  static final seerrUrl = NullableStringPref('seerr_url', transform: _trimEmptyAsNull);
 
   static final maxVolume = IntPref('max_volume', defaultValue: 100, transform: (v) => v.clamp(100, 300));
   static final subtitlePosition = IntPref('subtitle_position', defaultValue: 100, transform: (v) => v.clamp(0, 100));

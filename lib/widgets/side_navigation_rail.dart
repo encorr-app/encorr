@@ -19,9 +19,11 @@ import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
 import '../utils/library_grouping.dart';
 import '../providers/multi_server_provider.dart';
+import '../providers/seerr_provider.dart';
 import '../services/fullscreen_state_manager.dart';
 import '../theme/mono_tokens.dart';
 import '../widgets/backend_badge.dart';
+import '../widgets/glass/glass_panel.dart';
 import '../i18n/strings.g.dart';
 
 enum _LibraryNavSection { visible, hidden }
@@ -366,6 +368,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     required List<_LibraryNavRow> hiddenRows,
     required bool hasHiddenLibraries,
     required bool hasLiveTv,
+    required bool hasSeerr,
   }) {
     return {
       _kHome,
@@ -377,6 +380,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
       if (hasHiddenLibraries) _kHiddenLibraries,
       if (_showFullscreenToggle) _kFullscreen,
       if (hasLiveTv) 'liveTv',
+      if (hasSeerr) 'requests',
       ..._focusKeysForLibraryRows(visibleRows),
       if (_hiddenLibrariesExpanded) ..._focusKeysForLibraryRows(hiddenRows),
     };
@@ -443,6 +447,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     List<_LibraryNavRow> hiddenRows, {
     required bool hasHiddenLibraries,
     required bool hasLiveTv,
+    required bool hasSeerr,
   }) {
     return [
       if (widget.isOfflineMode && widget.onReconnect != null) _kReconnect,
@@ -458,6 +463,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
         ],
         if (hasLiveTv) 'liveTv',
         _kSearch,
+        if (hasSeerr) 'requests',
       ],
       if (_showDownloads) _kDownloads,
       _kSettings,
@@ -580,6 +586,11 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     final horizontalPadding = horizontalPaddingForContext(context, isCollapsed: isCollapsed);
     final itemHorizontalPadding = itemHorizontalPaddingForContext(context, isCollapsed: isCollapsed);
     final hasLiveTv = context.watch<MultiServerProvider>().hasLiveTv;
+    // Nullable lookup: tolerate harnesses (tests) without a SeerrProvider.
+    final hasSeerr = context.watch<SeerrProvider?>()?.isConfigured ?? false;
+    // TV: chrome-free while collapsed, glass over content while expanded.
+    // Other platforms: glass surface is always visible.
+    final surfaceOpacity = PlatformDetector.isTV() && isCollapsed ? 0.0 : 1.0;
 
     // Listen to fullscreen + groupLibrariesByServer setting so the rail
     // rebuilds when the user toggles "Group libraries by server" in Appearance.
@@ -611,6 +622,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
             hiddenRows: hiddenRows,
             hasHiddenLibraries: hiddenLibraries.isNotEmpty,
             hasLiveTv: hasLiveTv,
+            hasSeerr: hasSeerr,
           ),
         );
         final focusOrder = _buildFocusOrder(
@@ -618,6 +630,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
           hiddenRows,
           hasHiddenLibraries: hiddenLibraries.isNotEmpty,
           hasLiveTv: hasLiveTv,
+          hasSeerr: hasSeerr,
         );
         _debugAssertUniqueFocusOrder(focusOrder);
         return TapRegion(
@@ -644,10 +657,10 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                   children: [
                     Positioned.fill(
                       child: AnimatedOpacity(
-                        opacity: PlatformDetector.isTV() ? 0.0 : 1.0,
+                        opacity: surfaceOpacity,
                         duration: t.normal,
                         curve: Curves.easeOutCubic,
-                        child: ColoredBox(color: t.surface),
+                        child: const GlassPanel(borderRadius: BorderRadius.zero, border: false),
                       ),
                     ),
                     IgnorePointer(
@@ -713,6 +726,21 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                                       isCollapsed: isCollapsed,
                                     ),
                                     const SizedBox(height: 8),
+                                    // Seerr Discover+ tab — visible only when a
+                                    // Seerr server is configured.
+                                    if (hasSeerr) ...[
+                                      _buildNavItem(
+                                        icon: Symbols.travel_explore_rounded,
+                                        selectedIcon: Symbols.travel_explore_rounded,
+                                        label: 'Discover+',
+                                        isSelected: widget.selectedTab == NavigationTabId.requests,
+                                        isFocused: _focusTracker.isFocused('requests'),
+                                        onTap: () => widget.onDestinationSelected(NavigationTabId.requests),
+                                        focusNode: _focusTracker.get('requests'),
+                                        isCollapsed: isCollapsed,
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
                                   ],
                                   // Downloads (hidden on Apple TV — no user
                                   // file storage)

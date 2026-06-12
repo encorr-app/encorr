@@ -18,6 +18,22 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
   final Color textMuted;
   final InteractiveInkFeatureFactory? splashFactory;
 
+  // Glass design tokens (Plezy-Seerr fork): translucent chrome over content.
+  /// Translucent fill drawn over the backdrop blur.
+  final Color glassSurface;
+
+  /// Gaussian sigma for the backdrop blur behind glass surfaces.
+  final double glassBlurSigma;
+
+  /// 1px hairline border around glass surfaces.
+  final Color glassBorder;
+
+  /// Strong end of the scrim gradient laid over media backdrops.
+  final Color scrimStrong;
+
+  /// Soft (near-transparent) end of the scrim gradient.
+  final Color scrimSoft;
+
   const MonoTokens({
     required this.radiusSm,
     required this.radiusMd,
@@ -31,6 +47,11 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     required this.text,
     required this.textMuted,
     required this.splashFactory,
+    required this.glassSurface,
+    required this.glassBlurSigma,
+    required this.glassBorder,
+    required this.scrimStrong,
+    required this.scrimSoft,
   });
 
   @override
@@ -47,6 +68,11 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     Color? text,
     Color? textMuted,
     InteractiveInkFeatureFactory? splashFactory,
+    Color? glassSurface,
+    double? glassBlurSigma,
+    Color? glassBorder,
+    Color? scrimStrong,
+    Color? scrimSoft,
   }) => MonoTokens(
     radiusSm: radiusSm ?? this.radiusSm,
     radiusMd: radiusMd ?? this.radiusMd,
@@ -60,6 +86,11 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     text: text ?? this.text,
     textMuted: textMuted ?? this.textMuted,
     splashFactory: splashFactory ?? this.splashFactory,
+    glassSurface: glassSurface ?? this.glassSurface,
+    glassBlurSigma: glassBlurSigma ?? this.glassBlurSigma,
+    glassBorder: glassBorder ?? this.glassBorder,
+    scrimStrong: scrimStrong ?? this.scrimStrong,
+    scrimSoft: scrimSoft ?? this.scrimSoft,
   );
 
   @override
@@ -85,6 +116,11 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
       text: lerpC(text, other.text),
       textMuted: lerpC(textMuted, other.textMuted),
       splashFactory: other.splashFactory,
+      glassSurface: lerpC(glassSurface, other.glassSurface),
+      glassBlurSigma: lerpDouble(glassBlurSigma, other.glassBlurSigma, t)!,
+      glassBorder: lerpC(glassBorder, other.glassBorder),
+      scrimStrong: lerpC(scrimStrong, other.scrimStrong),
+      scrimSoft: lerpC(scrimSoft, other.scrimSoft),
     );
   }
 }

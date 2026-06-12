@@ -71,3 +71,6 @@ duplication-report/
 maestro/**/*.png
 
 server/deploy.sh
+
+# Graphify knowledge graph output
+graphify-out/
