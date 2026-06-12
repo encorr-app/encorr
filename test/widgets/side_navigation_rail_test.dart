@@ -18,6 +18,7 @@ import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_tokens.dart';
 import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/app_icon.dart';
+import 'package:plezy/widgets/glass/glass_panel.dart';
 import 'package:plezy/widgets/side_navigation_rail.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,11 @@ const _testTokens = MonoTokens(
   text: Colors.white,
   textMuted: Colors.white70,
   splashFactory: NoSplash.splashFactory,
+  glassSurface: Colors.white10,
+  glassBlurSigma: 0,
+  glassBorder: Colors.white24,
+  scrimStrong: Colors.black54,
+  scrimSoft: Colors.transparent,
 );
 
 MediaLibrary _library({
@@ -177,7 +183,9 @@ void main() {
     expect((selectedItemContainer.decoration as BoxDecoration?)?.color, isNull);
   });
 
-  testWidgets('expanded TV rail keeps its surface transparent', (tester) async {
+  // Plezy-Seerr fork: the expanded TV rail draws a glass surface over the
+  // content (upstream kept it fully transparent).
+  testWidgets('expanded TV rail shows the glass surface', (tester) async {
     TvDetectionService.debugSetAppleTVOverride(true);
     addTearDown(() => TvDetectionService.debugSetAppleTVOverride(null));
     await SettingsService.getInstance();
@@ -226,8 +234,8 @@ void main() {
         .widgetList<AnimatedOpacity>(
           find.descendant(of: find.byType(SideNavigationRail), matching: find.byType(AnimatedOpacity)),
         )
-        .singleWhere((widget) => widget.child is ColoredBox);
-    expect(surfaceOpacity.opacity, 0.0);
+        .singleWhere((widget) => widget.child is GlassPanel);
+    expect(surfaceOpacity.opacity, 1.0);
   });
 
   testWidgets('expanded rail keeps selected background outside sidebar keyboard focus', (tester) async {

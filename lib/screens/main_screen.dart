@@ -37,6 +37,7 @@ import '../providers/multi_server_provider.dart';
 import '../providers/hidden_libraries_provider.dart';
 import '../providers/libraries_provider.dart';
 import '../providers/playback_state_provider.dart';
+import '../providers/seerr_provider.dart';
 import '../widgets/settings_builder.dart';
 import '../widgets/tv_virtual_keyboard.dart';
 import '../services/api_cache.dart';
@@ -57,6 +58,7 @@ import 'libraries/library_quick_picker_sheet.dart';
 import 'libraries/libraries_screen.dart';
 import 'livetv/live_tv_screen.dart';
 import 'search_screen.dart';
+import 'seerr/seerr_discover_screen.dart';
 import 'downloads/downloads_screen.dart';
 import 'settings/settings_screen.dart';
 import 'profile/profile_switch_screen.dart';
@@ -162,6 +164,8 @@ class _MainScreenState extends State<MainScreen>
   OfflineModeProvider? _offlineModeProvider;
   MultiServerProvider? _multiServerProvider;
   bool _lastHasLiveTv = false;
+  SeerrProvider? _seerrProvider;
+  bool _lastHasSeerr = false;
 
   /// Whether a reconnection attempt is in progress
   bool _isReconnecting = false;
@@ -179,6 +183,7 @@ class _MainScreenState extends State<MainScreen>
   final GlobalKey<State<LibrariesScreen>> _librariesKey = GlobalKey();
   final GlobalKey<State<LiveTvScreen>> _liveTvKey = GlobalKey();
   final GlobalKey<State<SearchScreen>> _searchKey = GlobalKey();
+  final GlobalKey<State<SeerrDiscoverScreen>> _requestsKey = GlobalKey();
   final GlobalKey<State<DownloadsScreen>> _downloadsKey = GlobalKey();
   final GlobalKey<State<SettingsScreen>> _settingsKey = GlobalKey();
   final GlobalKey<SideNavigationRailState> _sideNavKey = GlobalKey();
@@ -251,6 +256,8 @@ class _MainScreenState extends State<MainScreen>
     } catch (_) {
       _lastHasLiveTv = false;
     }
+    // Same synchronization for the Seerr-backed Discover+ tab.
+    _lastHasSeerr = context.read<SeerrProvider?>()?.isConfigured ?? false;
     _currentTab = _defaultTabForMode(_isOffline);
     _lastOnlineTabId = _isOffline ? null : NavigationTabId.discover;
     _autoSwitchedToDownloads = _isOffline && _currentTab == NavigationTabId.downloads;
@@ -681,6 +688,14 @@ class _MainScreenState extends State<MainScreen>
       _multiServerProvider!.addListener(_handleLiveTvChanged);
     }
 
+    // Listen for Seerr configuration changes (shows/hides the Discover+ tab)
+    final seerr = context.read<SeerrProvider?>();
+    if (seerr != null && seerr != _seerrProvider) {
+      _seerrProvider?.removeListener(_handleSeerrChanged);
+      _seerrProvider = seerr;
+      _seerrProvider!.addListener(_handleSeerrChanged);
+    }
+
     // Wire up Companion Remote command routing (host devices only, once)
     if (!_companionRemoteSetup && PlatformDetector.shouldActAsRemoteHost(context)) {
       _companionRemoteSetup = true;
@@ -749,6 +764,7 @@ class _MainScreenState extends State<MainScreen>
     }
     _offlineModeProvider?.removeListener(_handleOfflineStatusChanged);
     _multiServerProvider?.removeListener(_handleLiveTvChanged);
+    _seerrProvider?.removeListener(_handleSeerrChanged);
     if (_bindingSettleListener != null) {
       _activeProfileForListener?.removeListener(_bindingSettleListener!);
     }
@@ -843,6 +859,7 @@ class _MainScreenState extends State<MainScreen>
           ),
           NavigationTabId.liveTv => LiveTvScreen(key: _liveTvKey),
           NavigationTabId.search => SearchScreen(key: _searchKey),
+          NavigationTabId.requests => SeerrDiscoverScreen(key: _requestsKey),
           NavigationTabId.downloads => DownloadsScreen(key: _downloadsKey),
           NavigationTabId.settings => SettingsScreen(key: _settingsKey),
         },
@@ -860,6 +877,7 @@ class _MainScreenState extends State<MainScreen>
   NavigationTabId _defaultTabForMode(bool isOffline) => NavigationTab.resolveDefaultTab(
     isOffline: isOffline,
     hasLiveTv: _hasLiveTv,
+    hasSeerr: _hasSeerr,
     preferredStartup: SettingsService.instanceOrNull?.read(SettingsService.startupSection),
   );
 
@@ -916,6 +934,18 @@ class _MainScreenState extends State<MainScreen>
     if (pending != null && _getVisibleTabs(_isOffline).any((t) => t.id == pending)) {
       _selectTab(pending);
     }
+  }
+
+  void _handleSeerrChanged() {
+    final hasSeerr = _seerrProvider?.isConfigured ?? false;
+    if (hasSeerr == _lastHasSeerr) return;
+    _lastHasSeerr = hasSeerr;
+
+    setState(() {
+      _screens = _buildScreens(_isOffline);
+      _currentTab = _normalizeTabForMode(_currentTab, _isOffline);
+    });
+    _updateTvosMenuPassthrough();
   }
 
   void _handleOfflineStatusChanged() {
@@ -1426,9 +1456,13 @@ class _MainScreenState extends State<MainScreen>
   /// Updated by _handleLiveTvChanged when the provider notifies.
   bool get _hasLiveTv => _lastHasLiveTv;
 
+  /// Whether the Seerr Discover+ tab is currently visible.
+  /// Updated by _handleSeerrChanged when the provider notifies.
+  bool get _hasSeerr => _lastHasSeerr;
+
   /// Get navigation tabs filtered by offline mode
   List<NavigationTab> _getVisibleTabs(bool isOffline) {
-    return NavigationTab.getVisibleTabs(isOffline: isOffline, hasLiveTv: _hasLiveTv);
+    return NavigationTab.getVisibleTabs(isOffline: isOffline, hasLiveTv: _hasLiveTv, hasSeerr: _hasSeerr);
   }
 
   List<NavigationTab> _getBottomNavigationTabs(BuildContext context) {
@@ -1444,6 +1478,7 @@ class _MainScreenState extends State<MainScreen>
       NavigationTabId.libraries => _librariesKey,
       NavigationTabId.liveTv => _liveTvKey,
       NavigationTabId.search => _searchKey,
+      NavigationTabId.requests => _requestsKey,
       NavigationTabId.downloads => _downloadsKey,
       NavigationTabId.settings => _settingsKey,
     };

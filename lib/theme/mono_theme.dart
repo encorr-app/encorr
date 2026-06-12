@@ -32,6 +32,17 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
   }
 
   final isDark = dark || oled;
+
+  // Glass tokens (Plezy-Seerr fork): translucent fills tuned so backdrop blur
+  // reads through while text stays legible on each theme variant.
+  final glassSurface = oled
+      ? const Color(0x990A0A0A) // 60% very dark gray
+      : dark
+      ? const Color(0x9915171C) // 60% dark surface
+      : const Color(0xB3FFFFFF); // 70% white
+  final glassBorder = isDark ? const Color(0x26FFFFFF) : const Color(0x14000000);
+  final scrimStrong = isDark ? const Color(0xCC000000) : const Color(0x8C000000);
+  const scrimSoft = Color(0x00000000);
   final clickableCursor = WidgetStateProperty.resolveWith<MouseCursor>(
     (states) => states.contains(WidgetState.disabled) ? MouseCursor.defer : SystemMouseCursors.click,
   );
@@ -164,6 +175,11 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
         text: c.text,
         textMuted: c.textMuted,
         splashFactory: NoSplash.splashFactory,
+        glassSurface: glassSurface,
+        glassBlurSigma: 20,
+        glassBorder: glassBorder,
+        scrimStrong: scrimStrong,
+        scrimSoft: scrimSoft,
       ),
     ],
   );

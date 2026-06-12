@@ -18,7 +18,9 @@ import '../widgets/rating_bottom_sheet.dart';
 
 import '../focus/dpad_navigator.dart';
 import '../focus/focusable_action_bar.dart';
+import '../focus/focusable_button.dart';
 import '../focus/focusable_wrapper.dart';
+import '../widgets/focusable_list_tile.dart';
 import '../focus/key_event_utils.dart';
 import '../focus/input_mode_tracker.dart';
 import '../widgets/focus_builders.dart';
@@ -53,7 +55,10 @@ import '../utils/grid_size_calculator.dart';
 import '../utils/layout_constants.dart';
 import '../providers/download_provider.dart';
 import '../providers/offline_watch_provider.dart';
+import '../providers/seerr_provider.dart';
 import '../providers/watch_state_store.dart';
+import '../services/seerr/seerr_id_resolver.dart';
+import '../services/seerr/seerr_models.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/app_logger.dart';
 import '../utils/formatters.dart';
@@ -81,6 +86,8 @@ import 'actor_media_screen.dart';
 import '../widgets/focusable_tab_chip.dart';
 import '../widgets/hub_section.dart';
 import '../widgets/ios_status_bar_tap_scroll_to_top.dart';
+import '../widgets/glass/glass_panel.dart';
+import '../widgets/inline_trailer_player.dart';
 import '../widgets/loading_indicator_box.dart';
 import '../widgets/tv_browse_rail.dart';
 import '../widgets/tv_spotlight_background.dart';
@@ -347,6 +354,12 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   // Focus target for the trailing info rows (studio / contentRating)
   late final FocusNode _infoRowsFocusNode;
   final _infoRowsSectionKey = GlobalKey();
+
+  // Seerr request integration + background trailer (Plezy-Seerr fork)
+  SeerrMediaRef? _seerrRef;
+  bool _seerrResolveStarted = false;
+  bool _seerrRequestInFlight = false;
+  final InlineTrailerPlayerController _trailerController = InlineTrailerPlayerController();
 
   @override
   MediaItem get serverBoundMetadata => _metadata;
@@ -648,7 +661,50 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     _overviewFocusNode = FocusNode(debugLabel: 'overview');
     _castFocusNode = FocusNode(debugLabel: 'cast_row');
     _infoRowsFocusNode = FocusNode(debugLabel: 'info_rows');
+    _trailerController.addListener(_onTrailerStateChanged);
     _loadFullMetadata();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeResolveSeerrRef());
+  }
+
+  /// Rebuild so the action row can show/hide the unmute/replay affordance
+  /// as the background trailer starts and stops.
+  void _onTrailerStateChanged() => setStateIfMounted(() {});
+
+  /// Kick off the TMDB id lookup for the Seerr request button and the
+  /// background trailer. Runs once per screen; no-ops when offline or when
+  /// the user isn't signed in to Seerr.
+  void _maybeResolveSeerrRef() {
+    if (!mounted || widget.isOffline || _seerrResolveStarted) return;
+    final seerr = context.read<SeerrProvider?>();
+    if (seerr == null || !seerr.isSignedIn) return;
+    final client = _getMediaClientForMetadata(context);
+    if (client == null) return;
+    _seerrResolveStarted = true;
+    unawaited(() async {
+      final ref = await SeerrIdResolver.resolve(_metadata, client);
+      if (!mounted || ref == null) return;
+      setStateIfMounted(() => _seerrRef = ref);
+      try {
+        await seerr.fetchStatus(ref.tmdbId, ref.mediaType);
+      } catch (e) {
+        appLogger.d('Seerr: status fetch failed for ${ref.tmdbId}', error: e);
+      }
+    }());
+  }
+
+  /// Background trailer layer shared by the TV spotlight and the mobile
+  /// hero. [child] is the static art that stays beneath the video (pass an
+  /// empty box when the art is painted by a sibling layer). Returns [child]
+  /// unchanged when no TMDB id resolved or the page is offline.
+  Widget _buildDetailTrailerLayer({required Widget child}) {
+    final ref = _seerrRef;
+    if (ref == null || widget.isOffline) return child;
+    return InlineTrailerPlayer(
+      tmdbId: ref.tmdbId,
+      mediaType: ref.mediaType,
+      controller: _trailerController,
+      child: child,
+    );
   }
 
   void _onScroll() {
@@ -791,6 +847,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     _lastEpisodeFocusNode.removeListener(_onLastEpisodeFocusChanged);
     _lastEpisodeFocusNode.dispose();
     _initialEpisodeFocusNode.dispose();
+    _trailerController.removeListener(_onTrailerStateChanged);
+    _trailerController.dispose();
     super.dispose();
   }
 
@@ -3337,6 +3395,9 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                 client: _getArtworkMediaClient(context),
                 showInfo: false,
                 localArtworkPathResolver: widget.isOffline ? (path) => _offlineArtworkLocalPath(context, path) : null,
+                backdropOverlay: _seerrRef == null || widget.isOffline
+                    ? null
+                    : _buildDetailTrailerLayer(child: const SizedBox.expand()),
               ),
               _buildTvDetailRevealGate(revealContent, handleBack),
             ],
@@ -3363,7 +3424,13 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       builder: (context, constraints) {
         if (constraints.maxHeight <= 0 || constraints.maxWidth <= 0) return const SizedBox.shrink();
 
-        final availableHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 264.0;
+        // Glass panel chrome around the info block (Plezy-Seerr fork): the
+        // panel padding is carved out of the available box so the line-fit
+        // math below keeps the action row fully visible.
+        final panelPadding = 18 * scale;
+        final rawAvailableHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 264.0;
+        final availableHeight = rawAvailableHeight - panelPadding * 2;
+        final innerMaxWidth = constraints.maxWidth - panelPadding * 2;
         final desiredLogoHeight = 220 * scale;
         final minLogoHeight = 72 * scale;
         final desiredLogoWidth = 790 * scale;
@@ -3397,16 +3464,19 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
             descriptionHeight +
             actionGap +
             actionHeight;
-        final logoWidth = desiredLogoWidth < constraints.maxWidth ? desiredLogoWidth : constraints.maxWidth;
+        final logoWidth = desiredLogoWidth < innerMaxWidth ? desiredLogoWidth : innerMaxWidth;
 
         return ClipRect(
           child: SizedBox(
-            height: availableHeight,
+            height: rawAvailableHeight,
             child: Align(
               alignment: .bottomLeft,
-              child: SizedBox(
-                height: contentHeight <= availableHeight ? contentHeight : availableHeight,
-                child: Column(
+              child: GlassPanel(
+                padding: EdgeInsets.all(panelPadding),
+                tintStrength: 0.85,
+                child: SizedBox(
+                  height: contentHeight <= availableHeight ? contentHeight : availableHeight,
+                  child: Column(
                   mainAxisSize: .min,
                   crossAxisAlignment: .start,
                   children: [
@@ -3451,6 +3521,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                     SizedBox(height: actionGap),
                     SizedBox(height: actionHeight, child: _buildActionButtons(metadata)),
                   ],
+                  ),
                 ),
               ),
             ),
@@ -3921,13 +3992,15 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   Widget _buildHeroHeader(BuildContext context, MediaItem metadata, Size size, double headerHeight) {
     return Stack(
       children: [
-        // Background Art (fixed height, no parallax)
+        // Background Art (fixed height, no parallax) with the trailer layer
+        // fading in above it once resolved.
         SizedBox(
           height: headerHeight,
           width: double.infinity,
-          child: Builder(
-            builder: (context) {
-              final containerAspect = size.width / headerHeight;
+          child: _buildDetailTrailerLayer(
+            child: Builder(
+              builder: (context) {
+                final containerAspect = size.width / headerHeight;
               final heroArtPaths = metadata.heroArtCandidates(containerAspectRatio: containerAspect);
               if (heroArtPaths.isEmpty) return const PlaceholderContainer();
 
@@ -3959,11 +4032,13 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                   memCacheHeight: memHeight,
                 ),
               );
-            },
+              },
+            ),
           ),
         ),
 
-        // Gradient overlay
+        // Gradient overlay (scrim tokens keep the info panel legible over
+        // both the static art and a playing trailer)
         Positioned(
           top: 0,
           left: 0,
@@ -3972,12 +4047,13 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
           child: Builder(
             builder: (context) {
               final bgColor = Theme.of(context).scaffoldBackgroundColor;
+              final tk = tokens(context);
               return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, bgColor.withValues(alpha: 0.9), bgColor],
+                    colors: [tk.scrimSoft, tk.scrimStrong, bgColor],
                     stops: const [0.3, 0.8, 1.0],
                   ),
                 ),
@@ -4009,7 +4085,11 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       builder: (context, constraints) {
         if (constraints.maxHeight <= 0 || constraints.maxWidth <= 0) return const SizedBox.shrink();
 
-        final availableHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 264.0;
+        // Glass panel chrome around the hero info (Plezy-Seerr fork): carve
+        // the panel padding out of the box so the fit math stays intact.
+        const panelPadding = 14.0;
+        final rawAvailableHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 264.0;
+        final availableHeight = rawAvailableHeight - panelPadding * 2;
         const desiredLogoHeight = 120.0;
         const desiredLogoWidth = 400.0;
         const actionHeight = 48.0;
@@ -4034,7 +4114,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         final logoHeight = (remainingForLogo - logoGap).clamp(0.0, desiredLogoHeight).toDouble();
         final showLogo = logoHeight >= 24;
         final effectiveLogoGap = showLogo ? logoGap : 0.0;
-        final logoWidth = desiredLogoWidth.clamp(0.0, constraints.maxWidth).toDouble();
+        final logoWidth = desiredLogoWidth.clamp(0.0, constraints.maxWidth - panelPadding * 2).toDouble();
         final titleFontSize = (logoHeight * 0.38).clamp(24.0, 40.0).toDouble();
         final contentHeight =
             (showLogo ? logoHeight + effectiveLogoGap : 0.0) +
@@ -4044,10 +4124,13 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
         return ClipRect(
           child: SizedBox(
-            height: availableHeight,
+            height: rawAvailableHeight,
             child: Align(
               alignment: .bottomLeft,
-              child: SizedBox(
+              child: GlassPanel(
+                padding: const EdgeInsets.all(panelPadding),
+                tintStrength: 0.85,
+                child: SizedBox(
                 height: contentHeight.clamp(0.0, availableHeight).toDouble(),
                 child: Align(
                   alignment: .bottomLeft,
@@ -4086,6 +4169,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                       if (showActions) SizedBox(height: actionHeight, child: _buildActionButtons(metadata)),
                     ],
                   ),
+                ),
                 ),
               ),
             ),

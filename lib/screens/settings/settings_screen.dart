@@ -47,7 +47,9 @@ import 'appearance_settings_screen.dart';
 import 'keyboard_shortcuts_screen.dart';
 import 'logs_screen.dart';
 import 'playback_settings_screen.dart';
+import '../../providers/seerr_provider.dart';
 import '../profile/profile_switch_screen.dart';
+import 'seerr_settings_screen.dart';
 import 'trackers_settings_screen.dart';
 import '../../widgets/loading_indicator_box.dart';
 
@@ -66,6 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kAppearance = 'appearance';
   static const _kPlayback = 'playback';
   static const _kTrackers = 'trackers';
+  static const _kSeerr = 'seerr';
   static const _kDownloadLocation = 'download_location';
   static const _kDownloadOnWifiOnly = 'download_on_wifi_only';
   static const _kAutoRemoveWatchedDownloads = 'auto_remove_watched_downloads';
@@ -152,6 +155,8 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                 _buildPlaybackTile(),
 
                 _buildTrackersTile(),
+
+                _buildSeerrTile(),
 
                 _buildConnectionsSection(),
 
@@ -243,6 +248,23 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           title: t.settings.trackers,
           subtitle: subtitle,
           destinationBuilder: (_) => const TrackersSettingsScreen(),
+        );
+      },
+    );
+  }
+
+  Widget _buildSeerrTile() {
+    return Consumer<SeerrProvider>(
+      builder: (context, seerr, _) {
+        final subtitle = seerr.isSignedIn
+            ? 'Signed in as ${seerr.displayName ?? 'Plex user'}'
+            : 'Request movies and shows via Seerr';
+        return SettingNavigationTile(
+          focusNode: _focusTracker.get(_kSeerr),
+          icon: Symbols.movie_filter_rounded,
+          title: 'Seerr',
+          subtitle: subtitle,
+          destinationBuilder: (_) => const SeerrSettingsScreen(),
         );
       },
     );

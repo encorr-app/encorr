@@ -194,6 +194,95 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
           _buildWatchedToggleButton(metadata, actionButtonStyle, tvScale, showFocus: state.showFocus),
     );
 
+    // Seerr request button (Plezy-Seerr fork): shown when signed in to Seerr
+    // and the item maps to a TMDB id. Disabled states mirror the Seerr
+    // availability status; otherwise it submits a request (movies confirm,
+    // shows pick seasons).
+    final seerr = widget.isOffline ? null : context.watch<SeerrProvider?>();
+    final seerrRef = _seerrRef;
+    FocusableAction? seerrAction;
+    if (seerr != null && seerr.isSignedIn && seerrRef != null) {
+      final status = seerr.cachedStatus(seerrRef.tmdbId, seerrRef.mediaType) ?? SeerrMediaStatus.unknown;
+      final isSeerrMovie = seerrRef.mediaType == SeerrMediaType.movie;
+      final isAvailable =
+          status == SeerrMediaStatus.available || (isSeerrMovie && status == SeerrMediaStatus.partiallyAvailable);
+      final isInProgress = status == SeerrMediaStatus.pending || status == SeerrMediaStatus.processing;
+      final requestEnabled = !isAvailable && !isInProgress && !_seerrRequestInFlight;
+
+      Widget buildSeerrButton(FocusableActionBuildState state) {
+        if (_seerrRequestInFlight) {
+          return IconButton.filledTonal(
+            onPressed: null,
+            icon: LoadingIndicatorBox(size: isTv ? 21 * tvScale : 20),
+            iconSize: isTv ? 21 * tvScale : 20,
+            style: actionButtonStyle(showFocus: state.showFocus),
+          );
+        }
+        if (isAvailable) {
+          return iconActionButton(
+            state,
+            onPressed: null,
+            icon: const AppIcon(Symbols.check_circle_rounded, fill: 1),
+            tooltip: 'Available',
+            foregroundColor: Colors.teal,
+          );
+        }
+        if (isInProgress) {
+          final processing = status == SeerrMediaStatus.processing;
+          return iconActionButton(
+            state,
+            onPressed: null,
+            icon: AppIcon(processing ? Symbols.autorenew_rounded : Symbols.hourglass_top_rounded, fill: 1),
+            tooltip: processing ? 'Processing' : 'Requested',
+            foregroundColor: Colors.amber,
+          );
+        }
+        return iconActionButton(
+          state,
+          onPressed: () => unawaited(_handleSeerrRequestPressed(metadata)),
+          icon: const AppIcon(Symbols.add_to_queue_rounded, fill: 1),
+          tooltip: !isSeerrMovie && status == SeerrMediaStatus.partiallyAvailable ? 'Request more seasons' : 'Request',
+        );
+      }
+
+      seerrAction = FocusableAction(
+        debugLabel: 'detail_seerr_request',
+        onPressed: requestEnabled ? () => unawaited(_handleSeerrRequestPressed(metadata)) : null,
+        builder: (context, state) => buildSeerrButton(state),
+      );
+    }
+
+    // Trailer affordances (Plezy-Seerr fork): only while a background
+    // trailer is actually playing on this page.
+    final trailerAudioAction = _trailerController.isActive && _trailerController.canUnmute
+        ? FocusableAction(
+            debugLabel: 'detail_trailer_mute',
+            onPressed: () => unawaited(_trailerController.toggleMute()),
+            builder: (context, state) => iconActionButton(
+              state,
+              onPressed: () => unawaited(_trailerController.toggleMute()),
+              icon: AppIcon(
+                _trailerController.isMuted ? Symbols.volume_off_rounded : Symbols.volume_up_rounded,
+                fill: 1,
+              ),
+              tooltip: _trailerController.isMuted ? 'Unmute trailer' : 'Mute trailer',
+            ),
+          )
+        : null;
+
+    final trailerReplayAction = _trailerController.isActive
+        ? FocusableAction(
+            debugLabel: 'detail_trailer_replay',
+            onPressed: () => unawaited(_trailerController.replay()),
+            builder: (context, state) => iconActionButton(
+              state,
+              onPressed: () => unawaited(_trailerController.replay()),
+              icon: const AppIcon(Symbols.replay_rounded, fill: 1),
+              tooltip: 'Replay trailer',
+            ),
+          )
+        : null;
+
     void showMoreActions() => _contextMenuKey.currentState?.showContextMenu(context);
 
     final moreActionsAction = widget.isOffline
@@ -216,6 +305,9 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       ?shuffleAction,
       ?downloadAction,
       watchedAction,
+      ?seerrAction,
+      ?trailerAudioAction,
+      ?trailerReplayAction,
       ?moreActionsAction,
     ];
 
@@ -246,7 +338,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         return compact;
       }
 
-      final medium = <FocusableAction>[playAction, ?downloadAction, watchedAction, ?moreActionsAction];
+      final medium = <FocusableAction>[playAction, ?downloadAction, watchedAction, ?seerrAction, ?moreActionsAction];
       if (!maxWidth.isFinite || estimatedRowWidth(medium) <= maxWidth) return medium;
 
       final compact = <FocusableAction>[playAction, watchedAction, ?moreActionsAction];
@@ -276,6 +368,158 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
           return actionBar(allActions);
         }
         return actionBar(compactActionsFor(maxWidth));
+      },
+    );
+  }
+
+  /// Submit a Seerr request for this item. Movies get a one-tap confirm;
+  /// shows get a season picker (multi-select or all seasons).
+  Future<void> _handleSeerrRequestPressed(MediaItem metadata) async {
+    final ref = _seerrRef;
+    if (ref == null || _seerrRequestInFlight) return;
+    final seerr = context.read<SeerrProvider>();
+    if (!seerr.isSignedIn) return;
+
+    List<int>? seasons;
+    if (ref.mediaType == SeerrMediaType.tv) {
+      final selection = await _showSeerrSeasonPicker(ref, seerr, metadata);
+      if (selection == null || !mounted) return;
+      // Empty selection means "all seasons" (Seerr wire value 'all').
+      seasons = selection.isEmpty ? null : selection;
+    } else {
+      final confirmed = await showConfirmDialog(
+        context,
+        title: 'Request movie',
+        message: 'Request "${metadata.displayTitle}"?',
+        confirmText: 'Request',
+      );
+      if (!confirmed || !mounted) return;
+    }
+
+    setStateIfMounted(() => _seerrRequestInFlight = true);
+    try {
+      await seerr.submitRequest(ref.tmdbId, ref.mediaType, seasons: seasons);
+      if (mounted) showSuccessSnackBar(context, 'Request submitted');
+    } catch (e) {
+      appLogger.w('Seerr: request failed', error: e);
+      if (mounted) showErrorSnackBar(context, 'Request failed: $e');
+    } finally {
+      setStateIfMounted(() => _seerrRequestInFlight = false);
+    }
+  }
+
+  /// Season multi-select for TV requests. Returns null when cancelled, an
+  /// empty list for "all seasons", or the selected season numbers.
+  Future<List<int>?> _showSeerrSeasonPicker(SeerrMediaRef ref, SeerrProvider seerr, MediaItem metadata) async {
+    SeerrTvDetails tv;
+    try {
+      tv = await seerr.getTv(ref.tmdbId);
+    } catch (e) {
+      appLogger.w('Seerr: season list fetch failed', error: e);
+      if (mounted) showErrorSnackBar(context, 'Could not load seasons: $e');
+      return null;
+    }
+    if (!mounted) return null;
+
+    final seasons = tv.requestableSeasons;
+    if (seasons.isEmpty) {
+      final confirmed = await showConfirmDialog(
+        context,
+        title: 'Request series',
+        message: 'Request all seasons of "${metadata.displayTitle}"?',
+        confirmText: 'Request',
+      );
+      return confirmed ? <int>[] : null;
+    }
+
+    // Seasons Seerr already has (or has in flight) can't be re-requested.
+    final blockedSeasons = <int, SeerrMediaStatus>{};
+    for (final info in tv.mediaInfo?.seasons ?? const <SeerrMediaSeasonInfo>[]) {
+      final number = info.seasonNumber;
+      if (number == null) continue;
+      if (info.status != SeerrMediaStatus.unknown && info.status != SeerrMediaStatus.deleted) {
+        blockedSeasons[number] = info.status;
+      }
+    }
+
+    final selected = <int>{};
+    return showDialog<List<int>>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            String blockedLabel(SeerrMediaStatus status) => switch (status) {
+              SeerrMediaStatus.available => 'Available',
+              SeerrMediaStatus.partiallyAvailable => 'Partial',
+              SeerrMediaStatus.processing => 'Processing',
+              _ => 'Requested',
+            };
+
+            return AlertDialog(
+              title: const Text('Request seasons'),
+              content: SizedBox(
+                width: 420,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 420),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      FocusableListTile(
+                        autofocus: true,
+                        leading: const AppIcon(Symbols.select_all_rounded),
+                        title: const Text('All seasons'),
+                        onTap: () => Navigator.pop(dialogContext, <int>[]),
+                      ),
+                      for (final season in seasons)
+                        Builder(
+                          builder: (context) {
+                            final number = season.seasonNumber!;
+                            final blocked = blockedSeasons[number];
+                            final isSelected = selected.contains(number);
+                            return FocusableListTile(
+                              enabled: blocked == null,
+                              leading: AppIcon(
+                                isSelected ? Symbols.check_box_rounded : Symbols.check_box_outline_blank_rounded,
+                                fill: isSelected ? 1.0 : 0.0,
+                              ),
+                              title: Text(season.name ?? 'Season $number'),
+                              subtitle: season.episodeCount != null ? Text('${season.episodeCount} episodes') : null,
+                              trailing: blocked != null ? Text(blockedLabel(blocked)) : null,
+                              onTap: blocked != null
+                                  ? null
+                                  : () => setDialogState(() {
+                                      if (!selected.add(number)) selected.remove(number);
+                                    }),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                FocusableButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: Text(t.common.cancel),
+                  ),
+                ),
+                FocusableButton(
+                  onPressed: selected.isEmpty
+                      ? null
+                      : () => Navigator.pop(dialogContext, selected.toList()..sort()),
+                  child: FilledButton(
+                    onPressed: selected.isEmpty
+                        ? null
+                        : () => Navigator.pop(dialogContext, selected.toList()..sort()),
+                    child: const Text('Request'),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }

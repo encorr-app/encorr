@@ -33,6 +33,10 @@ class TvSpotlightBackground extends StatelessWidget {
   final bool showInfo;
   final String? Function(String? artworkPath)? localArtworkPathResolver;
 
+  /// Optional layer composited above the static artwork but beneath the
+  /// scrims and info (e.g. an inline background trailer).
+  final Widget? backdropOverlay;
+
   const TvSpotlightBackground({
     super.key,
     required this.item,
@@ -47,6 +51,7 @@ class TvSpotlightBackground extends StatelessWidget {
     this.showPrimaryAction = true,
     this.showInfo = true,
     this.localArtworkPathResolver,
+    this.backdropOverlay,
   });
 
   double _scale(BuildContext context) => TvLayoutConstants.scaleOf(context);
@@ -68,6 +73,7 @@ class TvSpotlightBackground extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             if (media != null) _buildArtwork(context, media) else ColoredBox(color: bgColor),
+            ?backdropOverlay,
             _buildHorizontalScrim(bgColor),
             DecoratedBox(
               decoration: BoxDecoration(
