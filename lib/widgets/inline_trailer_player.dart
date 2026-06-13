@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../main.dart' show routeObserver;
 import '../mpv/models.dart';
+import '../mpv/player/platform/player_inline_android.dart';
 import '../mpv/player/player.dart';
 import '../mpv/video.dart';
 import '../providers/seerr_provider.dart';
@@ -68,28 +69,22 @@ class InlineTrailerPlayerController extends ChangeNotifier {
 /// True inline playback needs the native player to (a) render into a
 /// Flutter `Texture` so it composites between the static art and the
 /// foreground UI, and (b) support a second instance alongside the
-/// full-screen player. Today neither holds on the shipping platforms:
+/// full-screen player.
 ///
-/// * **Android (ExoPlayer + MPV fallback)** — video renders into a
-///   full-window `SurfaceView` hole-punched *behind* the Flutter view
-///   (`MpvPlayerCore`/`FlutterOverlayHelper`), so an inline trailer would
-///   be invisible behind the opaque detail UI. Both plugins are also
-///   single-core singletons on their method channels
-///   (`com.plezy/exo_player`, `com.plezy/mpv_player`): a trailer instance
-///   would steal the core from any active `VideoPlayerScreen`.
+/// * **Android** — [PlayerInlineAndroid] uses a dedicated MPV instance on
+///   `com.plezy/inline_player` that renders into a Flutter Texture via
+///   [TextureRegistry.SurfaceProducer]. The main ExoPlayer/MPV singletons
+///   are unaffected.
 /// * **Windows** — `PlayerWindows` embeds a native window behind the
 ///   Flutter window (`textureId == null`, `VideoRectSupport`), same
 ///   visibility problem, same singleton channel.
 /// * **macOS/iOS** — MPVKit renders to a full-window Metal layer.
-/// * **Linux** — mpv does return a Flutter texture id, but shares the
+/// * **Linux** — mpv returns a Flutter texture id, but shares the
 ///   singleton `com.plezy/mpv_player` channel with the full player.
 ///
-/// [supportsEmbeddedPlayback] is therefore `false` until the native
-/// plugins grow texture-backed multi-instance playback; the widget then
-/// works without further Dart changes. Everything else (gating, delayed
-/// start, stream resolution, mute/loop/fade, route-aware pause, the
-/// controller surface) is fully implemented and exercised the moment the
-/// flag flips.
+/// [supportsEmbeddedPlayback] is `true` on Android when the inline texture
+/// path is available; other platforms keep the static backdrop until their
+/// native plugins grow texture-backed multi-instance playback.
 class InlineTrailerPlayer extends StatefulWidget {
   /// Direct stream URL. Takes precedence over [tmdbId]/[mediaType].
   final String? streamUrl;
@@ -128,7 +123,7 @@ class InlineTrailerPlayer extends StatefulWidget {
 
   /// Whether this build can composite a second native player instance as a
   /// Flutter texture. See the class docs for the per-platform analysis.
-  static bool get supportsEmbeddedPlayback => false;
+  static bool get supportsEmbeddedPlayback => PlayerInlineAndroid.isSupported;
 
   @override
   State<InlineTrailerPlayer> createState() => _InlineTrailerPlayerState();
@@ -269,8 +264,7 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
     if (url == null || _disposed || !mounted || _pausedByNavigation) return;
 
     try {
-      final useExoPlayer = SettingsService.instanceOrNull?.read(SettingsService.useExoPlayer) ?? true;
-      final player = Player(useExoPlayer: useExoPlayer);
+      final player = PlayerInlineAndroid();
       _player = player;
       _hasAudio = hasAudio;
       _muted = true;
