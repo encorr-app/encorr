@@ -1120,7 +1120,6 @@ class SetupScreen extends StatefulWidget {
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   static const Duration _bootstrapTimeout = Duration(seconds: 15);
   static const Duration _setupTimeout = Duration(seconds: 20);
-  static const Duration _connectivityTimeout = Duration(seconds: 3);
   static const Duration _connectionListTimeout = Duration(seconds: 10);
   static const Duration _bindingSettleTimeout = Duration(seconds: 20);
   static const Duration _settingsTimeout = Duration(seconds: 5);
@@ -1189,12 +1188,14 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     _setupAborted = false;
     _setupWatchdog = Timer(_setupTimeout, () {
       if (_setupAborted) return;
+      appLogger.i('Setup: phase watchdog fired');
       _abortSetup('Setup: global setup watchdog timed out after $_setupTimeout');
       unawaited(Sentry.captureMessage('Setup global watchdog timeout', level: SentryLevel.warning));
       unawaited(_navigateToAuthScreen());
     });
 
     // --- Bootstrap phase ---
+    appLogger.i('Setup: phase bootstrap start');
     _setStatus(t.common.loadingServers);
 
     final storage = await StorageService.getInstance();
@@ -1245,28 +1246,10 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         return;
       }
     }
+    appLogger.i('Setup: phase bootstrap done');
 
-    // --- Network phase ---
-    _setStatus(t.common.checkingNetwork);
-    bool hasNetwork;
-    unawaited(Sentry.addBreadcrumb(Breadcrumb(message: 'Checking network connectivity', category: 'setup')));
-    try {
-      final connectivityResult = await Connectivity().checkConnectivity().timeout(
-        _connectivityTimeout,
-        onTimeout: () => [ConnectivityResult.other],
-      );
-      hasNetwork = !connectivityResult.contains(ConnectivityResult.none);
-    } catch (e) {
-      // connectivity_plus throws DBusServiceUnknownException on Linux without NetworkManager
-      hasNetwork = true;
-    }
-    if (await _setupShouldStop()) return;
-
-    unawaited(
-      Sentry.addBreadcrumb(Breadcrumb(message: 'Network check done: hasNetwork=$hasNetwork', category: 'setup')),
-    );
-
-    // --- Connections phase ---
+    // --- Connections phase (before network: fresh installs skip connectivity) ---
+    appLogger.i('Setup: phase connections start');
     if (!mounted) return;
 
     final connectionRegistry = context.read<ConnectionRegistry>();
@@ -1289,14 +1272,44 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       return;
     }
     if (await _setupShouldStop()) return;
+    appLogger.i('Setup: phase connections done (${allConnections.length} connection(s))');
 
     if (allConnections.isEmpty) {
+      appLogger.i('Setup: no saved connections; skipping network check and going to auth');
       _cancelSetupWatchdog();
       if (mounted) {
         await _navigateToAuthScreen();
       }
       return;
     }
+
+    // --- Network phase ---
+    appLogger.i('Setup: phase network start');
+    bool hasNetwork = true;
+    if (!_setupAborted) {
+      _setStatus(t.common.checkingNetwork);
+      unawaited(Sentry.addBreadcrumb(Breadcrumb(message: 'Checking network connectivity', category: 'setup')));
+      // connectivity_plus can hang indefinitely on Android TV emulators when the
+      // native platform channel never responds; .timeout() does not help there.
+      if (Platform.isAndroid) {
+        hasNetwork = true;
+      } else {
+        try {
+          hasNetwork = await Future.any<bool>([
+            Connectivity().checkConnectivity().then((r) => !r.contains(ConnectivityResult.none)),
+            Future<bool>.delayed(const Duration(seconds: 2), () => true),
+          ]);
+        } catch (_) {
+          hasNetwork = true;
+        }
+      }
+    }
+    if (await _setupShouldStop()) return;
+    appLogger.i('Setup: phase network done (hasNetwork=$hasNetwork)');
+
+    unawaited(
+      Sentry.addBreadcrumb(Breadcrumb(message: 'Network check done: hasNetwork=$hasNetwork', category: 'setup')),
+    );
 
     if (!mounted) return;
 
@@ -1333,6 +1346,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     );
 
     // --- Server connect phase ---
+    appLogger.i('Setup: phase server connect start');
     _setStatus(t.common.connectingToServers);
 
     final activeProfile = context.read<ActiveProfileProvider>();
@@ -1400,6 +1414,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     if (await _setupShouldStop()) return;
 
     _cancelSetupWatchdog();
+    appLogger.i('Setup: phase server connect done; navigating to MainScreen');
     unawaited(Navigator.pushReplacement(context, fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));
   }
 
