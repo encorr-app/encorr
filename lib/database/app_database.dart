@@ -55,6 +55,26 @@ enum OfflineActionType {
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  Future<void>? _readyFuture;
+
+  /// Completes once the lazy connection is open and migrations have finished.
+  /// Startup must await this before parallel DB work (download recovery,
+  /// ConnectionRegistry reads) so concurrent first-open does not race onCreate
+  /// and strand the splash on "Loading servers..." (#1022).
+  Future<void> ensureReady({Duration timeout = const Duration(seconds: 30)}) {
+    final pending = _readyFuture;
+    if (pending != null) return pending;
+
+    final future = customSelect('SELECT 1').get().timeout(timeout);
+    _readyFuture = future.then((_) {
+      appLogger.d('AppDatabase: ready');
+    }).catchError((Object e, StackTrace st) {
+      _readyFuture = null;
+      Error.throwWithStackTrace(e is Error ? e : Exception(e.toString()), st);
+    });
+    return _readyFuture!;
+  }
+
   /// Test-only constructor — inject an in-memory [QueryExecutor]
   /// (e.g. `NativeDatabase.memory()`) so tests don't touch real disk.
   @visibleForTesting
@@ -76,11 +96,31 @@ class AppDatabase extends _$AppDatabase {
         await customStatement('PRAGMA foreign_keys = ON');
       },
       onCreate: (Migrator m) async {
-        // Download recovery + Setup bootstrap can both open the DB on first
-        // launch; the loser of the race hits "already exists" on indexes
-        // Drift creates from @TableIndex. Treat that as success — the winner
-        // finished createAll and the schema is complete.
-        await _ignoreAlreadyExists('onCreate schema', () => m.createAll());
+        // Download recovery + profile hydration can both trigger first open;
+        // the loser may enter onCreate while the winner is still in createAll.
+        // Retry with short backoff instead of swallowing a partial createAll,
+        // which used to leave Drift waiters stuck forever (#1022).
+        for (var attempt = 0; attempt < 5; attempt++) {
+          final existing = await m.database
+              .customSelect("SELECT 1 FROM sqlite_master WHERE type='table' AND name='connections' LIMIT 1")
+              .get();
+          if (existing.isNotEmpty) {
+            appLogger.i('onCreate: schema already present; skipping createAll');
+            return;
+          }
+          try {
+            await m.createAll();
+            return;
+          } catch (e) {
+            final message = e.toString().toLowerCase();
+            if (!message.contains('already exists') && !message.contains('duplicate column name')) {
+              rethrow;
+            }
+            appLogger.w('onCreate schema race (attempt ${attempt + 1}): $e');
+            await Future<void>.delayed(Duration(milliseconds: 50 * (attempt + 1)));
+          }
+        }
+        throw StateError('onCreate failed after concurrent-open retries');
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 7) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import '../models/plex/plex_home.dart';
@@ -21,6 +22,8 @@ import 'connection_registry.dart';
 /// `plex_home_users_{connectionId}` SharedPreferences slot so
 /// [PlexHomeService] picks it up on cold start.
 class ConnectionBootstrap {
+  static const Duration _plexApiTimeout = Duration(seconds: 15);
+
   ConnectionBootstrap({
     required this.storage,
     required this.connectionRegistry,
@@ -287,8 +290,11 @@ class ConnectionBootstrap {
 Future<List<PlexHomeUser>> _fetchPlexHomeUsers(String accountToken) async {
   final auth = await PlexAuthService.create();
   try {
-    final home = await auth.getHomeUsers(accountToken);
+    final home = await auth.getHomeUsers(accountToken).timeout(ConnectionBootstrap._plexApiTimeout);
     return home.users;
+  } on TimeoutException catch (e, st) {
+    appLogger.w('Plex Home fetch timed out during bootstrap', error: e, stackTrace: st);
+    return const [];
   } finally {
     auth.dispose();
   }
@@ -297,7 +303,10 @@ Future<List<PlexHomeUser>> _fetchPlexHomeUsers(String accountToken) async {
 Future<Map<String, dynamic>> _fetchPlexUserInfo(String accountToken) async {
   final auth = await PlexAuthService.create();
   try {
-    return await auth.getUserInfo(accountToken);
+    return await auth.getUserInfo(accountToken).timeout(ConnectionBootstrap._plexApiTimeout);
+  } on TimeoutException catch (e, st) {
+    appLogger.w('Plex user info fetch timed out during bootstrap', error: e, stackTrace: st);
+    return const {};
   } finally {
     auth.dispose();
   }
