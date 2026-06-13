@@ -256,6 +256,16 @@ Future<void> _bootstrapApp() async {
 
   _registerShaderLicenses();
 
+  // Open + migrate the Drift database before any Provider or SetupScreen work
+  // touches ConnectionRegistry. Concurrent first-open used to race onCreate and
+  // strand the splash on "Loading servers..." (#1022).
+  final appDatabase = AppDatabase();
+  try {
+    await appDatabase.ensureReady().timeout(const Duration(seconds: 30));
+  } catch (e, st) {
+    appLogger.e('Database warm-up failed before runApp', error: e, stackTrace: st);
+  }
+
   // In release mode, show a colored placeholder instead of a blank/white screen
   // when a widget build() throws an unhandled exception.
   ErrorWidget.builder = (FlutterErrorDetails details) {
@@ -263,7 +273,7 @@ Future<void> _bootstrapApp() async {
     return const ColoredBox(color: Color(0xFF000000));
   };
 
-  runApp(MainApp(settings: settings, storage: storage));
+  runApp(MainApp(settings: settings, storage: storage, appDatabase: appDatabase));
 }
 
 Breadcrumb? _beforeBreadcrumb(Breadcrumb? breadcrumb, Hint _) {
@@ -438,8 +448,9 @@ Future<String?> _rootPinPrompt(Profile profile, {String? errorMessage}) {
 class MainApp extends StatefulWidget {
   final SettingsService settings;
   final StorageService storage;
+  final AppDatabase appDatabase;
 
-  const MainApp({super.key, required this.settings, required this.storage});
+  const MainApp({super.key, required this.settings, required this.storage, required this.appDatabase});
 
   @override
   State<MainApp> createState() => _MainAppState();
@@ -452,6 +463,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   late final DownloadManagerService _downloadManager;
   late final OfflineWatchSyncService _offlineWatchSyncService;
   late final AppLifecycleListener _appLifecycleListener;
+  late final Future<void> _databaseReady;
   StreamSubscription<WatchStateEvent>? _watchStateSubscription;
 
   /// WiFi-reconnect sync trigger, listening on [OfflineModeProvider] — the
@@ -488,7 +500,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
     _serverManager = MultiServerManager();
     _aggregationService = DataAggregationService(_serverManager);
-    _appDatabase = AppDatabase();
+    _appDatabase = widget.appDatabase;
+    _databaseReady = _appDatabase.ensureReady();
 
     PlexApiCache.initialize(_appDatabase);
     JellyfinApiCache.initialize(_appDatabase);
@@ -498,7 +511,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       storageService: DownloadStorageService.instance,
       clientResolver: _serverManager.resolveDownloadClient,
     );
-    _downloadManager.recoveryFuture = _downloadManager.recoverInterruptedDownloads();
+    _downloadManager.recoveryFuture = _databaseReady.then((_) => _downloadManager.recoverInterruptedDownloads());
 
     _offlineWatchSyncService = OfflineWatchSyncService(database: _appDatabase, serverManager: _serverManager);
 
@@ -708,7 +721,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               profileConnections: context.read<ProfileConnectionRegistry>(),
               storage: context.read<StorageService>(),
             );
-            unawaited(service.start());
+            unawaited(_databaseReady.then((_) => service.start()));
             return service;
           },
           dispose: (_, s) => s.dispose(),
@@ -721,7 +734,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               connections: context.read<ConnectionRegistry>(),
               storage: context.read<StorageService>(),
             );
-            unawaited(provider.initialize());
+            unawaited(_databaseReady.then((_) => provider.initialize()));
             return provider;
           },
         ),
@@ -1098,6 +1111,8 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
+  static const Duration _bootstrapTimeout = Duration(seconds: 15);
+
   String _statusMessage = '';
   bool _enteringOffline = false;
 
@@ -1140,11 +1155,31 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     final storage = await StorageService.getInstance();
     final registry = ServerRegistry(storage);
 
+    var bootstrapFinished = false;
+    Timer? watchdog;
+    void finishBootstrapPhase() {
+      if (bootstrapFinished) return;
+      bootstrapFinished = true;
+      watchdog?.cancel();
+    }
+
+    watchdog = Timer(_bootstrapTimeout, () {
+      if (bootstrapFinished) return;
+      bootstrapFinished = true;
+      appLogger.e('Setup: bootstrap watchdog timed out after $_bootstrapTimeout; returning to auth');
+      unawaited(Sentry.captureMessage('Setup bootstrap watchdog timeout', level: SentryLevel.warning));
+      if (mounted) {
+        unawaited(_navigateToAuthScreen());
+      }
+    });
+
     // Idempotent: brings legacy SharedPreferences state (plexToken,
     // currentUserUUID, homeUsersCache) into the new ConnectionRegistry +
     // ProfileRegistry tables. No-op on subsequent launches.
     if (mounted) {
       try {
+        final db = context.read<AppDatabase>();
+        await db.ensureReady().timeout(_bootstrapTimeout);
         final connRegistry = context.read<ConnectionRegistry>();
         final profileRegistry = context.read<ProfileRegistry>();
         final activeProfiles = context.read<ActiveProfileProvider>();
@@ -1154,15 +1189,32 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
           serverRegistry: registry,
           profileRegistry: profileRegistry,
         );
-        await bootstrap.run();
+        await bootstrap.run().timeout(_bootstrapTimeout);
         // Provider initialization starts before this screen runs the legacy
         // migration. Reload after bootstrap so copied Plex Home users and the
         // selected active profile are visible before setup decides binding is
         // already settled and navigates to MainScreen.
-        await activeProfiles.reloadFromStorage();
+        await activeProfiles.reloadFromStorage().timeout(_bootstrapTimeout);
+        finishBootstrapPhase();
+      } on TimeoutException catch (e, st) {
+        finishBootstrapPhase();
+        appLogger.e('Setup: bootstrap timed out; returning to auth', error: e, stackTrace: st);
+        unawaited(Sentry.captureException(e, stackTrace: st));
+        if (mounted) {
+          await _navigateToAuthScreen();
+        }
+        return;
       } catch (e, st) {
-        appLogger.w('Boot-time migration failed', error: e, stackTrace: st);
+        finishBootstrapPhase();
+        appLogger.e('Setup: boot-time migration failed; returning to auth', error: e, stackTrace: st);
+        unawaited(Sentry.captureException(e, stackTrace: st));
+        if (mounted) {
+          await _navigateToAuthScreen();
+        }
+        return;
       }
+    } else {
+      finishBootstrapPhase();
     }
 
     // Check network connectivity early to fast-path airplane mode.
