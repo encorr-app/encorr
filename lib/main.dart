@@ -440,6 +440,20 @@ bool shouldEnterOfflineModeAfterStartupBind({required bool bindingSucceeded, req
 @visibleForTesting
 bool databaseWarmUpFailed = false;
 
+/// Gates background provider init (download recovery, PlexHome, ActiveProfile)
+/// until [SetupScreen] finishes its fast-path probe or slow-path bootstrap.
+class StartupGate {
+  StartupGate._();
+
+  static final Completer<void> _gate = Completer<void>();
+
+  static Future<void> get future => _gate.future;
+
+  static void complete() {
+    if (!_gate.isCompleted) _gate.complete();
+  }
+}
+
 /// Top-level PIN prompt used by [ActiveProfileBinder] when it runs above the
 /// per-screen widget tree. Routes through [rootNavigatorKey] so the dialog
 /// renders correctly whether the binder fires from the splash, MainScreen,
@@ -469,7 +483,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   late final DownloadManagerService _downloadManager;
   late final OfflineWatchSyncService _offlineWatchSyncService;
   late final AppLifecycleListener _appLifecycleListener;
-  late final Future<void> _databaseReady;
   StreamSubscription<WatchStateEvent>? _watchStateSubscription;
 
   /// WiFi-reconnect sync trigger, listening on [OfflineModeProvider] — the
@@ -507,7 +520,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     _serverManager = MultiServerManager();
     _aggregationService = DataAggregationService(_serverManager);
     _appDatabase = widget.appDatabase;
-    _databaseReady = _appDatabase.ensureReady();
 
     PlexApiCache.initialize(_appDatabase);
     JellyfinApiCache.initialize(_appDatabase);
@@ -517,7 +529,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       storageService: DownloadStorageService.instance,
       clientResolver: _serverManager.resolveDownloadClient,
     );
-    _downloadManager.recoveryFuture = _databaseReady.then((_) => _downloadManager.recoverInterruptedDownloads());
+    _downloadManager.recoveryFuture = StartupGate.future.then((_) => _downloadManager.recoverInterruptedDownloads());
 
     _offlineWatchSyncService = OfflineWatchSyncService(database: _appDatabase, serverManager: _serverManager);
 
@@ -727,7 +739,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               profileConnections: context.read<ProfileConnectionRegistry>(),
               storage: context.read<StorageService>(),
             );
-            unawaited(_databaseReady.then((_) => service.start()));
+            unawaited(StartupGate.future.then((_) => service.start()));
             return service;
           },
           dispose: (_, s) => s.dispose(),
@@ -740,7 +752,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               connections: context.read<ConnectionRegistry>(),
               storage: context.read<StorageService>(),
             );
-            unawaited(_databaseReady.then((_) => provider.initialize()));
+            unawaited(StartupGate.future.then((_) => provider.initialize()));
             return provider;
           },
         ),
@@ -1119,6 +1131,7 @@ class SetupScreen extends StatefulWidget {
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   static const Duration _bootstrapTimeout = Duration(seconds: 15);
   static const Duration _setupTimeout = Duration(seconds: 20);
+  static const Duration _quickProbeTimeout = Duration(seconds: 5);
   static const Duration _connectionListTimeout = Duration(seconds: 10);
   static const Duration _bindingSettleTimeout = Duration(seconds: 20);
   static const Duration _settingsTimeout = Duration(seconds: 5);
@@ -1143,6 +1156,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
   Future<void> _enterOfflineMode() async {
     if (_enteringOffline) return;
+    StartupGate.complete();
     _enteringOffline = true;
     _setStatus(t.common.startingOfflineMode);
     await context.read<DownloadProvider>().ensureInitialized();
@@ -1151,6 +1165,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   }
 
   Future<void> _navigateToAuthScreen() async {
+    StartupGate.complete();
     final route = fadeRoute(const AuthScreen());
     final navigator = rootNavigatorKey.currentState;
     if (navigator != null) {
@@ -1202,21 +1217,31 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     final registry = ServerRegistry(storage);
 
-    // Idempotent: brings legacy SharedPreferences state (plexToken,
-    // currentUserUUID, homeUsersCache) into the new ConnectionRegistry +
-    // ProfileRegistry tables. No-op on subsequent launches.
     if (mounted) {
       try {
         final db = context.read<AppDatabase>();
-        await db.ensureReady().timeout(_bootstrapTimeout);
+        await db.ensureReady().timeout(_quickProbeTimeout);
         if (await _setupShouldStop()) return;
 
-        final connRegistry = context.read<ConnectionRegistry>();
+        final connectionRegistry = context.read<ConnectionRegistry>();
+        final quickConnections = await connectionRegistry.list().timeout(_quickProbeTimeout);
+        if (await _setupShouldStop()) return;
+
+        if (quickConnections.isEmpty) {
+          appLogger.i('Setup: fast path — no connections, skipping bootstrap');
+          _cancelSetupWatchdog();
+          if (mounted) {
+            await _navigateToAuthScreen();
+          }
+          return;
+        }
+
+        appLogger.i('Setup: slow path — ${quickConnections.length} connection(s), running bootstrap');
         final profileRegistry = context.read<ProfileRegistry>();
         final activeProfiles = context.read<ActiveProfileProvider>();
         final bootstrap = ConnectionBootstrap(
           storage: storage,
-          connectionRegistry: connRegistry,
+          connectionRegistry: connectionRegistry,
           serverRegistry: registry,
           profileRegistry: profileRegistry,
         );
@@ -1229,6 +1254,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         // already settled and navigates to MainScreen.
         await activeProfiles.reloadFromStorage().timeout(_bootstrapTimeout);
         if (await _setupShouldStop()) return;
+
+        StartupGate.complete();
       } on TimeoutException catch (e, st) {
         _abortSetup('Setup: bootstrap timed out; returning to auth');
         unawaited(Sentry.captureException(e, stackTrace: st));
@@ -1274,7 +1301,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     appLogger.i('Setup: phase connections done (${allConnections.length} connection(s))');
 
     if (allConnections.isEmpty) {
-      appLogger.i('Setup: no saved connections; skipping network check and going to auth');
+      appLogger.i('Setup: no saved connections after bootstrap; going to auth');
       _cancelSetupWatchdog();
       if (mounted) {
         await _navigateToAuthScreen();
@@ -1456,6 +1483,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
   @override
   void dispose() {
+    StartupGate.complete();
     _cancelSetupWatchdog();
     _statusSub?.cancel();
     _connectProgressSub?.cancel();
