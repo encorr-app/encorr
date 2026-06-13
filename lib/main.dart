@@ -263,6 +263,7 @@ Future<void> _bootstrapApp() async {
     await appDatabase.ensureReady().timeout(const Duration(seconds: 30));
   } catch (e, st) {
     appLogger.e('Database warm-up failed before runApp', error: e, stackTrace: st);
+    databaseWarmUpFailed = true;
   }
 
   // In release mode, show a colored placeholder instead of a blank/white screen
@@ -425,6 +426,11 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 bool shouldEnterOfflineModeAfterStartupBind({required bool bindingSucceeded, required bool hasOnlineServers}) {
   return !bindingSucceeded && !hasOnlineServers;
 }
+
+/// Set when [_bootstrapApp] fails to open/migrate the Drift database before
+/// [runApp]. [SetupScreen] checks this on entry and routes to auth immediately.
+@visibleForTesting
+bool databaseWarmUpFailed = false;
 
 /// Top-level PIN prompt used by [ActiveProfileBinder] when it runs above the
 /// per-screen widget tree. Routes through [rootNavigatorKey] so the dialog
@@ -1113,9 +1119,16 @@ class SetupScreen extends StatefulWidget {
 
 class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   static const Duration _bootstrapTimeout = Duration(seconds: 15);
+  static const Duration _setupTimeout = Duration(seconds: 20);
+  static const Duration _connectivityTimeout = Duration(seconds: 3);
+  static const Duration _connectionListTimeout = Duration(seconds: 10);
+  static const Duration _bindingSettleTimeout = Duration(seconds: 20);
+  static const Duration _settingsTimeout = Duration(seconds: 5);
 
   String _statusMessage = '';
   bool _enteringOffline = false;
+  bool _setupAborted = false;
+  Timer? _setupWatchdog;
 
   // Per-server connection status: serverId -> (name, connected?)
   final Map<String, (String name, bool? connected)> _serverStatus = {};
@@ -1150,29 +1163,44 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     await Navigator.pushReplacement(context, route);
   }
 
+  void _cancelSetupWatchdog() {
+    _setupWatchdog?.cancel();
+    _setupWatchdog = null;
+  }
+
+  void _abortSetup(String reason) {
+    if (_setupAborted) return;
+    _setupAborted = true;
+    _cancelSetupWatchdog();
+    appLogger.e(reason);
+  }
+
+  Future<bool> _setupShouldStop() async {
+    return _setupAborted || !mounted;
+  }
+
   Future<void> _loadSavedCredentials() async {
+    if (databaseWarmUpFailed) {
+      appLogger.e('Setup: database warm-up failed before runApp; returning to auth');
+      await _navigateToAuthScreen();
+      return;
+    }
+
+    _setupAborted = false;
+    _setupWatchdog = Timer(_setupTimeout, () {
+      if (_setupAborted) return;
+      _abortSetup('Setup: global setup watchdog timed out after $_setupTimeout');
+      unawaited(Sentry.captureMessage('Setup global watchdog timeout', level: SentryLevel.warning));
+      unawaited(_navigateToAuthScreen());
+    });
+
+    // --- Bootstrap phase ---
     _setStatus(t.common.loadingServers);
 
     final storage = await StorageService.getInstance();
+    if (await _setupShouldStop()) return;
+
     final registry = ServerRegistry(storage);
-
-    var bootstrapFinished = false;
-    Timer? watchdog;
-    void finishBootstrapPhase() {
-      if (bootstrapFinished) return;
-      bootstrapFinished = true;
-      watchdog?.cancel();
-    }
-
-    watchdog = Timer(_bootstrapTimeout, () {
-      if (bootstrapFinished) return;
-      bootstrapFinished = true;
-      appLogger.e('Setup: bootstrap watchdog timed out after $_bootstrapTimeout; returning to auth');
-      unawaited(Sentry.captureMessage('Setup bootstrap watchdog timeout', level: SentryLevel.warning));
-      if (mounted) {
-        unawaited(_navigateToAuthScreen());
-      }
-    });
 
     // Idempotent: brings legacy SharedPreferences state (plexToken,
     // currentUserUUID, homeUsersCache) into the new ConnectionRegistry +
@@ -1181,6 +1209,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       try {
         final db = context.read<AppDatabase>();
         await db.ensureReady().timeout(_bootstrapTimeout);
+        if (await _setupShouldStop()) return;
+
         final connRegistry = context.read<ConnectionRegistry>();
         final profileRegistry = context.read<ProfileRegistry>();
         final activeProfiles = context.read<ActiveProfileProvider>();
@@ -1191,41 +1221,38 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
           profileRegistry: profileRegistry,
         );
         await bootstrap.run().timeout(_bootstrapTimeout);
+        if (await _setupShouldStop()) return;
+
         // Provider initialization starts before this screen runs the legacy
         // migration. Reload after bootstrap so copied Plex Home users and the
         // selected active profile are visible before setup decides binding is
         // already settled and navigates to MainScreen.
         await activeProfiles.reloadFromStorage().timeout(_bootstrapTimeout);
-        finishBootstrapPhase();
+        if (await _setupShouldStop()) return;
       } on TimeoutException catch (e, st) {
-        finishBootstrapPhase();
-        appLogger.e('Setup: bootstrap timed out; returning to auth', error: e, stackTrace: st);
+        _abortSetup('Setup: bootstrap timed out; returning to auth');
         unawaited(Sentry.captureException(e, stackTrace: st));
         if (mounted) {
           await _navigateToAuthScreen();
         }
         return;
       } catch (e, st) {
-        finishBootstrapPhase();
-        appLogger.e('Setup: boot-time migration failed; returning to auth', error: e, stackTrace: st);
+        _abortSetup('Setup: boot-time migration failed; returning to auth');
         unawaited(Sentry.captureException(e, stackTrace: st));
         if (mounted) {
           await _navigateToAuthScreen();
         }
         return;
       }
-    } else {
-      finishBootstrapPhase();
     }
 
-    // Check network connectivity early to fast-path airplane mode.
-    // Timeout guards against connectivity_plus hanging on some Android TV devices after force-close.
+    // --- Network phase ---
     _setStatus(t.common.checkingNetwork);
     bool hasNetwork;
     unawaited(Sentry.addBreadcrumb(Breadcrumb(message: 'Checking network connectivity', category: 'setup')));
     try {
       final connectivityResult = await Connectivity().checkConnectivity().timeout(
-        const Duration(seconds: 3),
+        _connectivityTimeout,
         onTimeout: () => [ConnectivityResult.other],
       );
       hasNetwork = !connectivityResult.contains(ConnectivityResult.none);
@@ -1233,36 +1260,38 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       // connectivity_plus throws DBusServiceUnknownException on Linux without NetworkManager
       hasNetwork = true;
     }
+    if (await _setupShouldStop()) return;
 
     unawaited(
       Sentry.addBreadcrumb(Breadcrumb(message: 'Network check done: hasNetwork=$hasNetwork', category: 'setup')),
     );
 
-    _setStatus(t.common.loadingServers);
-
+    // --- Connections phase ---
     if (!mounted) return;
 
-    // Snapshot ConnectionRegistry before we cross any awaits — Provider lookups
-    // through `context` after async gaps trip the use_build_context_synchronously
-    // lint, and reading early is safe because the registry is a singleton.
     final connectionRegistry = context.read<ConnectionRegistry>();
     final List<Connection> allConnections;
     try {
-      allConnections = await connectionRegistry.list();
+      allConnections = await connectionRegistry.list().timeout(_connectionListTimeout);
+    } on TimeoutException catch (e, st) {
+      _abortSetup('Setup: connection list timed out after $_connectionListTimeout; returning to auth');
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      if (mounted) {
+        await _navigateToAuthScreen();
+      }
+      return;
     } catch (e, st) {
-      // Defence-in-depth: a DB-open failure here used to propagate
-      // uncaught and strand the splash forever (#1022). Route to auth so
-      // the user is never trapped, and surface to Sentry so an unknown
-      // regression doesn't go silent.
-      appLogger.e('Setup: failed to load connections; returning to auth', error: e, stackTrace: st);
+      _abortSetup('Setup: failed to load connections; returning to auth');
       unawaited(Sentry.captureException(e, stackTrace: st));
       if (mounted) {
         await _navigateToAuthScreen();
       }
       return;
     }
+    if (await _setupShouldStop()) return;
 
     if (allConnections.isEmpty) {
+      _cancelSetupWatchdog();
       if (mounted) {
         await _navigateToAuthScreen();
       }
@@ -1273,6 +1302,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     // No network — skip connection attempts and go straight to offline mode
     if (!hasNetwork) {
+      _cancelSetupWatchdog();
       await _enterOfflineMode();
       return;
     }
@@ -1301,45 +1331,39 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         ),
       ),
     );
+
+    // --- Server connect phase ---
     _setStatus(t.common.connectingToServers);
 
-    // Snapshot Provider refs before further awaits.
     final activeProfile = context.read<ActiveProfileProvider>();
-    // The Provider is `lazy: false` so the binder is constructed already, but
-    // SetupScreen starts it only after the offline fast path has been ruled out.
     final binder = context.read<ActiveProfileBinder>();
     final downloadProvider = context.read<DownloadProvider>();
 
-    // Wait for the active profile to load from disk so the binder has a
-    // profile to bind. `initialize` is fire-and-forget at provider creation,
-    // so awaiting here pulls control through the same future and triggers
-    // the listener-driven rebind synchronously.
-    await activeProfile.reloadFromStorage();
-    if (!mounted) return;
-
     if (activeProfile.active == null && activeProfile.profiles.isEmpty) {
-      appLogger.w('Setup: stored connections exist but no profiles resolved after bootstrap; returning to auth');
-      await _navigateToAuthScreen();
+      _abortSetup('Setup: stored connections exist but no profiles resolved after bootstrap; returning to auth');
+      if (mounted) {
+        await _navigateToAuthScreen();
+      }
       return;
     }
+    if (await _setupShouldStop()) return;
 
-    // Wire the per-server status listener before either branch so the splash
-    // checkmarks fill in even while the user is choosing a profile.
     _bindServerStatusListener(activeProfile, _serverManagerFromContext);
-
-    // Start only after network/offline startup has been decided and the
-    // active profile snapshot is hydrated. This prevents an eager binder
-    // microtask from racing the no-network/manual-offline fast path.
     binder.start();
 
-    // If "prompt for profile on launch" is on (or no profile is selected
-    // yet), surface the picker BEFORE waiting for the previously-active
-    // profile's bind to settle — otherwise the user sees the splash fully
-    // connect before the prompt arrives. The picker's own `_switchTo` calls
-    // `awaitBindingSettle` after activation, so by the time it pops, the
-    // chosen profile's bind is settled.
-    final settings = await SettingsService.getInstance();
-    if (!mounted) return;
+    SettingsService settings;
+    try {
+      settings = await SettingsService.getInstance().timeout(_settingsTimeout);
+    } on TimeoutException catch (e, st) {
+      _abortSetup('Setup: settings load timed out; returning to auth');
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      if (mounted) {
+        await _navigateToAuthScreen();
+      }
+      return;
+    }
+    if (await _setupShouldStop()) return;
+
     final hasNoActive = activeProfile.active == null && activeProfile.profiles.isNotEmpty;
     final requireOnOpen =
         settings.read(SettingsService.requireProfileSelectionOnOpen) && activeProfile.hasMultipleProfiles;
@@ -1350,16 +1374,16 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       await Navigator.of(
         context,
       ).push(MaterialPageRoute(builder: (_) => const ProfileSwitchScreen(requireSelection: true)));
-      if (!mounted) return;
+      if (await _setupShouldStop()) return;
       bindingSucceeded = activeProfile.active != null && activeProfile.lastBindingSucceeded;
     } else {
-      // Now wait for the binder to settle. This is the Plex/Jellyfin server
-      // race: per-server status flips on the splash list as each client comes
-      // online, and we don't push MainScreen until they're all done (success
-      // or fail). Eliminates the "Failed to load discover content: No servers
-      // available" race the old eager-navigate flow caused.
-      bindingSucceeded = await activeProfile.awaitBindingSettle();
-      if (!mounted) return;
+      try {
+        bindingSucceeded = await activeProfile.awaitBindingSettle().timeout(_bindingSettleTimeout);
+      } on TimeoutException catch (e, st) {
+        appLogger.w('Setup: binding settle timed out after $_bindingSettleTimeout', error: e, stackTrace: st);
+        bindingSucceeded = false;
+      }
+      if (await _setupShouldStop()) return;
     }
 
     if (shouldEnterOfflineModeAfterStartupBind(
@@ -1367,17 +1391,15 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       hasOnlineServers: _serverManagerFromContext().onlineServerIds.isNotEmpty,
     )) {
       appLogger.w('Setup: no servers online after startup bind; starting offline mode');
+      _cancelSetupWatchdog();
       await _enterOfflineMode();
       return;
     }
 
-    // Repopulate metadata for downloaded items now that per-backend caches
-    // are resolvable (the Connections row + live JellyfinClient are in
-    // place). Without this the downloads list and sync-rule titles render
-    // empty until something forces a later refresh.
     await downloadProvider.refreshMetadataFromCache();
-    if (!mounted) return;
+    if (await _setupShouldStop()) return;
 
+    _cancelSetupWatchdog();
     unawaited(Navigator.pushReplacement(context, fadeRoute(MainScreen(initialPromptHandled: shouldPrompt))));
   }
 
@@ -1420,6 +1442,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
   @override
   void dispose() {
+    _cancelSetupWatchdog();
     _statusSub?.cancel();
     _connectProgressSub?.cancel();
     super.dispose();
