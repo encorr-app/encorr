@@ -76,7 +76,11 @@ class AppDatabase extends _$AppDatabase {
         await customStatement('PRAGMA foreign_keys = ON');
       },
       onCreate: (Migrator m) async {
-        await m.createAll();
+        // Download recovery + Setup bootstrap can both open the DB on first
+        // launch; the loser of the race hits "already exists" on indexes
+        // Drift creates from @TableIndex. Treat that as success — the winner
+        // finished createAll and the schema is complete.
+        await _ignoreAlreadyExists('onCreate schema', () => m.createAll());
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 7) {

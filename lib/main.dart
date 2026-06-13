@@ -1124,8 +1124,19 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     unawaited(Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true))));
   }
 
+  Future<void> _navigateToAuthScreen() async {
+    final route = fadeRoute(const AuthScreen());
+    final navigator = rootNavigatorKey.currentState;
+    if (navigator != null) {
+      await navigator.pushReplacement(route);
+      return;
+    }
+    if (!mounted) return;
+    await Navigator.pushReplacement(context, route);
+  }
+
   Future<void> _loadSavedCredentials() async {
-    _setStatus(t.common.checkingNetwork);
+    _setStatus(t.common.loadingServers);
 
     final storage = await StorageService.getInstance();
     final registry = ServerRegistry(storage);
@@ -1157,6 +1168,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     // Check network connectivity early to fast-path airplane mode.
     // Timeout guards against connectivity_plus hanging on some Android TV devices after force-close.
+    _setStatus(t.common.checkingNetwork);
     bool hasNetwork;
     unawaited(Sentry.addBreadcrumb(Breadcrumb(message: 'Checking network connectivity', category: 'setup')));
     try {
@@ -1193,14 +1205,14 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       appLogger.e('Setup: failed to load connections; returning to auth', error: e, stackTrace: st);
       unawaited(Sentry.captureException(e, stackTrace: st));
       if (mounted) {
-        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+        await _navigateToAuthScreen();
       }
       return;
     }
 
     if (allConnections.isEmpty) {
       if (mounted) {
-        unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+        await _navigateToAuthScreen();
       }
       return;
     }
@@ -1255,7 +1267,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
     if (activeProfile.active == null && activeProfile.profiles.isEmpty) {
       appLogger.w('Setup: stored connections exist but no profiles resolved after bootstrap; returning to auth');
-      unawaited(Navigator.pushReplacement(context, fadeRoute(const AuthScreen())));
+      await _navigateToAuthScreen();
       return;
     }
 
