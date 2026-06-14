@@ -8,6 +8,8 @@ Encorr is a native Plex and Jellyfin client with built-in **Seerr** support — 
 
 This repository is a **work in progress**. There is no public website or release download yet.
 
+It is also a **manually vibe-coded** project — shaped by hands-on iteration, what feels right on real devices, and direct experimentation rather than a formal spec or roadmap.
+
 ## Goal
 
 The aim is a single cross-platform app (desktop, mobile, and TV) that handles the full media workflow:
