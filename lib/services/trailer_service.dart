@@ -62,7 +62,10 @@ class TrailerService {
       appLogger.d('Trailer: Seerr detail fetch failed for $mediaType/$tmdbId', error: e);
       return null;
     }
-    if (key == null || key.isEmpty) return null;
+    if (key == null || key.isEmpty) {
+      appLogger.d('Trailer: no YouTube key from Seerr for $mediaType/$tmdbId');
+      return null;
+    }
     return resolveYouTubeKey(key);
   }
 
@@ -76,7 +79,11 @@ class TrailerService {
     try {
       final manifest = await yt.videos.streams.getManifest(youTubeKey);
       final pick = _pickStream(manifest);
-      if (pick == null) return null;
+      if (pick == null) {
+        appLogger.d('Trailer: no suitable mp4 stream for $youTubeKey');
+        return null;
+      }
+      appLogger.d('Trailer: picked ${pick.info.videoResolution.height}p stream for $youTubeKey (audio=${pick.hasAudio})');
       return TrailerResolution(
         youTubeKey: youTubeKey,
         streamUrl: pick.info.url.toString(),

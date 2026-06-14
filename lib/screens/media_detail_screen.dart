@@ -9,8 +9,8 @@ import '../main.dart' show routeObserver;
 import '../services/image_cache_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
-import 'package:plezy/utils/platform_detector.dart';
-import 'package:plezy/widgets/app_icon.dart';
+import 'package:encorr/utils/platform_detector.dart';
+import 'package:encorr/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../widgets/collapsible_text.dart';
@@ -87,10 +87,10 @@ import '../widgets/focusable_tab_chip.dart';
 import '../widgets/hub_section.dart';
 import '../widgets/ios_status_bar_tap_scroll_to_top.dart';
 import '../widgets/glass/glass_panel.dart';
+import '../widgets/detail_trailer_focus.dart';
 import '../widgets/inline_trailer_player.dart';
 import '../widgets/loading_indicator_box.dart';
 import '../widgets/tv_browse_rail.dart';
-import '../widgets/tv_spotlight_background.dart';
 
 part 'media_detail/action_buttons.dart';
 
@@ -355,11 +355,12 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   late final FocusNode _infoRowsFocusNode;
   final _infoRowsSectionKey = GlobalKey();
 
-  // Seerr request integration + background trailer (Plezy-Seerr fork)
+  // Seerr request integration + background trailer (Encorr fork)
   SeerrMediaRef? _seerrRef;
   bool _seerrResolveStarted = false;
   bool _seerrRequestInFlight = false;
   final InlineTrailerPlayerController _trailerController = InlineTrailerPlayerController();
+  final DetailTrailerFocusController _detailTrailerFocusController = DetailTrailerFocusController();
 
   @override
   MediaItem get serverBoundMetadata => _metadata;
@@ -849,6 +850,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     _initialEpisodeFocusNode.dispose();
     _trailerController.removeListener(_onTrailerStateChanged);
     _trailerController.dispose();
+    _detailTrailerFocusController.dispose();
     super.dispose();
   }
 
@@ -2095,7 +2097,11 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
   /// Focus the first available section above the primary action row.
   void _focusAboveActionRow() {
-    if (PlatformDetector.isTV()) return;
+    if (PlatformDetector.isTV()) {
+      _detailTrailerFocusController.engageFromDetails();
+      _trailerController.setUserEngaged(_detailTrailerFocusController.isEngaged);
+      return;
+    }
     if (!widget.isOffline) _ratingChipFocusNode.requestFocus();
   }
 
@@ -3381,6 +3387,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     );
 
     final blockSystemBack = Platform.isAndroid && InputModeTracker.isKeyboardMode(context);
+    final seerrRef = _seerrRef;
+    final trailerBackdrop = _buildTvDetailTrailerBackdrop(context, metadata);
     final content = OverlaySheetHost(
       // blockSystemBack keeps the route from double-popping on Android keyboard/
       // TV (the key handler owns dpad back); the host also closes an open sheet.
@@ -3388,25 +3396,57 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       child: Focus(
         onKeyEvent: handleBack,
         child: Scaffold(
-          body: Stack(
-            children: [
-              TvSpotlightBackground(
-                item: metadata,
-                client: _getArtworkMediaClient(context),
-                showInfo: false,
-                localArtworkPathResolver: widget.isOffline ? (path) => _offlineArtworkLocalPath(context, path) : null,
-                backdropOverlay: _seerrRef == null || widget.isOffline
-                    ? null
-                    : _buildDetailTrailerLayer(child: const SizedBox.expand()),
-              ),
-              _buildTvDetailRevealGate(revealContent, handleBack),
-            ],
+          body: DetailTrailerFocusLayout(
+            controller: _detailTrailerFocusController,
+            trailerController: _trailerController,
+            tmdbId: seerrRef?.tmdbId,
+            mediaType: seerrRef?.mediaType,
+            trailerEnabled: seerrRef != null && !widget.isOffline,
+            backdrop: trailerBackdrop,
+            details: _buildTvDetailRevealGate(revealContent, handleBack),
           ),
         ),
       ),
     );
 
     return content;
+  }
+
+  /// Static backdrop art for the TV detail trailer strip.
+  Widget _buildTvDetailTrailerBackdrop(BuildContext context, MediaItem metadata) {
+    final size = MediaQuery.sizeOf(context);
+    final containerAspect = size.width / (size.height * 0.25);
+    final heroArtPaths = metadata.heroArtCandidates(containerAspectRatio: containerAspect);
+    if (heroArtPaths.isEmpty) return const PlaceholderContainer();
+
+    final localArtwork = _buildOfflineArtworkIfAvailable(
+      context,
+      artworkPaths: heroArtPaths,
+      fit: BoxFit.cover,
+      imageType: ImageType.art,
+      errorWidget: (context, url, error) => const PlaceholderContainer(),
+    );
+    if (localArtwork != null) return localArtwork;
+
+    final client = _getArtworkMediaClient(context);
+    final mqSize = MediaQuery.sizeOf(context);
+    final dpr = MediaImageHelper.effectiveDevicePixelRatio(context);
+    final (_, memHeight) = MediaImageHelper.getMemCacheDimensions(
+      displayWidth: (mqSize.width * dpr).round(),
+      displayHeight: ((size.height * 0.25) * dpr).round(),
+      imageType: ImageType.art,
+    );
+
+    return blurArtwork(
+      _buildHeroNetworkArtwork(
+        context,
+        client: client,
+        artworkPaths: heroArtPaths,
+        mediaSize: mqSize,
+        dpr: dpr,
+        memCacheHeight: memHeight,
+      ),
+    );
   }
 
   Widget _buildTvDetailForeground(
@@ -3424,7 +3464,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       builder: (context, constraints) {
         if (constraints.maxHeight <= 0 || constraints.maxWidth <= 0) return const SizedBox.shrink();
 
-        // Glass panel chrome around the info block (Plezy-Seerr fork): the
+        // Glass panel chrome around the info block (Encorr fork): the
         // panel padding is carved out of the available box so the line-fit
         // math below keeps the action row fully visible.
         final panelPadding = 18 * scale;
@@ -4085,7 +4125,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       builder: (context, constraints) {
         if (constraints.maxHeight <= 0 || constraints.maxWidth <= 0) return const SizedBox.shrink();
 
-        // Glass panel chrome around the hero info (Plezy-Seerr fork): carve
+        // Glass panel chrome around the hero info (Encorr fork): carve
         // the panel padding out of the box so the fit math stays intact.
         const panelPadding = 14.0;
         final rawAvailableHeight = constraints.maxHeight.isFinite ? constraints.maxHeight : 264.0;

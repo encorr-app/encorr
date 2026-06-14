@@ -26,9 +26,15 @@ class InlineTrailerPlayerController extends ChangeNotifier {
 
   bool get isMuted => _state?._muted ?? true;
 
+  /// Whether the user has expanded or fullscreen-engaged the trailer strip.
+  bool get isUserEngaged => _state?._userEngaged ?? false;
+
   /// Whether the resolved stream carries audio (muxed). Video-only streams
   /// cannot be unmuted; hide the unmute affordance when this is false.
   bool get canUnmute => _state?._hasAudio ?? false;
+
+  /// Resolved direct stream URL, available once playback has started.
+  String? get resolvedStreamUrl => _state?._resolvedStreamUrl;
 
   Future<void> toggleMute() async => _state?._toggleMute();
 
@@ -38,6 +44,12 @@ class InlineTrailerPlayerController extends ChangeNotifier {
   void pause() => _state?._pausePlayback();
 
   void resume() => _state?._resumePlayback();
+
+  /// Marks whether the user engaged the trailer (expand/fullscreen). Audio
+  /// controls stay hidden until engaged.
+  void setUserEngaged(bool engaged) {
+    _state?._setUserEngaged(engaged);
+  }
 
   void _attach(_InlineTrailerPlayerState state) {
     _state = state;
@@ -72,7 +84,7 @@ class InlineTrailerPlayerController extends ChangeNotifier {
 /// full-screen player.
 ///
 /// * **Android** — [PlayerInlineAndroid] uses a dedicated MPV instance on
-///   `com.plezy/inline_player` that renders into a Flutter Texture via
+///   `com.encorr/inline_player` that renders into a Flutter Texture via
 ///   [TextureRegistry.SurfaceProducer]. The main ExoPlayer/MPV singletons
 ///   are unaffected.
 /// * **Windows** — `PlayerWindows` embeds a native window behind the
@@ -80,7 +92,7 @@ class InlineTrailerPlayerController extends ChangeNotifier {
 ///   visibility problem, same singleton channel.
 /// * **macOS/iOS** — MPVKit renders to a full-window Metal layer.
 /// * **Linux** — mpv returns a Flutter texture id, but shares the
-///   singleton `com.plezy/mpv_player` channel with the full player.
+///   singleton `com.encorr/mpv_player` channel with the full player.
 ///
 /// [supportsEmbeddedPlayback] is `true` on Android when the inline texture
 /// path is available; other platforms keep the static backdrop until their
@@ -131,6 +143,7 @@ class InlineTrailerPlayer extends StatefulWidget {
 
 class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAware, WidgetsBindingObserver {
   Timer? _delayTimer;
+  Timer? _firstFrameFallbackTimer;
   Player? _player;
   StreamSubscription<void>? _firstFrameSubscription;
   StreamSubscription<bool>? _completedSubscription;
@@ -139,17 +152,35 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
   bool _videoVisible = false;
   bool _muted = true;
   bool _hasAudio = false;
+  bool _userEngaged = false;
+  String? _resolvedStreamUrl;
   bool _pausedByNavigation = false;
   bool _startRequested = false;
   bool _disposed = false;
 
   bool get _gatesAllowPlayback {
-    if (!widget.enabled) return false;
-    if (!InlineTrailerPlayer.supportsEmbeddedPlayback) return false;
-    if (DevicePerformance.isReduced) return false;
+    if (!widget.enabled) {
+      appLogger.d('Trailer: gated off (enabled=false)');
+      return false;
+    }
+    if (!InlineTrailerPlayer.supportsEmbeddedPlayback) {
+      appLogger.d('Trailer: gated off (supportsEmbeddedPlayback=false)');
+      return false;
+    }
+    if (DevicePerformance.isReduced) {
+      appLogger.d('Trailer: gated off (reduced performance tier)');
+      return false;
+    }
     final settings = SettingsService.instanceOrNull;
-    if (settings == null || !settings.read(SettingsService.autoPlayTrailers)) return false;
-    return widget.streamUrl != null || (widget.tmdbId != null && widget.mediaType != null);
+    if (settings == null || !settings.read(SettingsService.autoPlayTrailers)) {
+      appLogger.d('Trailer: gated off (autoPlayTrailers disabled)');
+      return false;
+    }
+    if (widget.streamUrl == null && (widget.tmdbId == null || widget.mediaType == null)) {
+      appLogger.d('Trailer: gated off (no streamUrl or tmdbId/mediaType)');
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -245,6 +276,7 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
     var hasAudio = widget.streamUrlHasAudio;
     if (widget.streamUrl != null) {
       url = widget.streamUrl;
+      appLogger.d('Trailer: using direct streamUrl');
     } else {
       SeerrProvider? seerr;
       try {
@@ -252,16 +284,33 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
       } catch (_) {
         seerr = null; // No provider in this subtree: trailer stays off.
       }
-      if (seerr == null) return;
+      if (seerr == null) {
+        appLogger.d('Trailer: no SeerrProvider in widget tree, cannot resolve tmdb ${widget.tmdbId}');
+        return;
+      }
+      if (!seerr.isSignedIn) {
+        appLogger.d('Trailer: Seerr not signed in, skipping tmdb ${widget.tmdbId}');
+        return;
+      }
+      appLogger.d('Trailer: resolving stream for ${widget.mediaType}/${widget.tmdbId}');
       final resolution = await TrailerService.instance.resolveForMedia(
         tmdbId: widget.tmdbId!,
         mediaType: widget.mediaType!,
         seerr: seerr,
       );
+      if (resolution == null) {
+        appLogger.d('Trailer: stream resolution failed for ${widget.mediaType}/${widget.tmdbId}');
+      } else {
+        appLogger.d(
+          'Trailer: stream resolved for ${widget.mediaType}/${widget.tmdbId} (audio=${resolution.hasAudio})',
+        );
+      }
       url = resolution?.streamUrl;
       hasAudio = resolution?.hasAudio ?? false;
     }
     if (url == null || _disposed || !mounted || _pausedByNavigation) return;
+
+    _resolvedStreamUrl = url;
 
     try {
       final player = PlayerInlineAndroid();
@@ -270,6 +319,15 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
       _muted = true;
 
       _firstFrameSubscription = player.streams.playbackRestart.listen((_) => _onFirstFrame());
+      _firstFrameFallbackTimer?.cancel();
+      _firstFrameFallbackTimer = Timer(const Duration(seconds: 3), () {
+        if (_disposed || _videoVisible) return;
+        final textureId = player.textureId;
+        if (textureId != null) {
+          appLogger.d('Trailer: playbackRestart fallback fired (textureId=$textureId)');
+          _onFirstFrame();
+        }
+      });
       // Loop fallback for backends that ignore the mpv loop property.
       _completedSubscription = player.streams.completed.listen((completed) {
         if (completed) unawaited(_loopRestart());
@@ -294,6 +352,8 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
 
   void _onFirstFrame() {
     if (_disposed || !mounted) return;
+    _firstFrameFallbackTimer?.cancel();
+    _firstFrameFallbackTimer = null;
     final player = _player;
     if (player == null) return;
     if (player.textureId == null) {
@@ -331,7 +391,7 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
 
   Future<void> _toggleMute() async {
     final player = _player;
-    if (player == null || !_hasAudio) return;
+    if (player == null || !_hasAudio || !_userEngaged) return;
     _muted = !_muted;
     try {
       await player.setVolume(_muted ? 0 : 100);
@@ -351,9 +411,22 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
     await _loopRestart();
   }
 
+  void _setUserEngaged(bool engaged) {
+    if (_userEngaged == engaged) return;
+    _userEngaged = engaged;
+    if (!engaged && !_muted) {
+      _muted = true;
+      final player = _player;
+      if (player != null) unawaited(player.setVolume(0).catchError((Object _) {}));
+    }
+    widget.controller?._changed();
+  }
+
   void _teardownPlayback({bool notify = true}) {
     _delayTimer?.cancel();
     _delayTimer = null;
+    _firstFrameFallbackTimer?.cancel();
+    _firstFrameFallbackTimer = null;
     _firstFrameSubscription?.cancel();
     _firstFrameSubscription = null;
     _completedSubscription?.cancel();
@@ -365,6 +438,8 @@ class _InlineTrailerPlayerState extends State<InlineTrailerPlayer> with RouteAwa
     _videoVisible = false;
     _muted = true;
     _hasAudio = false;
+    _userEngaged = false;
+    _resolvedStreamUrl = null;
     if (notify) {
       if (mounted && !_disposed) setState(() {});
       if (wasVisible) widget.onActiveChanged?.call(false);
