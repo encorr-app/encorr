@@ -16,6 +16,8 @@ import '../../widgets/app_icon.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/glass/glass_panel.dart';
+import '../../utils/platform_detector.dart';
+import '../../widgets/detail_trailer_focus.dart';
 import '../../widgets/inline_trailer_player.dart';
 import 'seerr_widgets.dart';
 
@@ -41,6 +43,17 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> with Mo
   bool _loading = true;
   bool _submitting = false;
   String? _loadError;
+  final InlineTrailerPlayerController _trailerController = InlineTrailerPlayerController();
+  final DetailTrailerFocusController _detailTrailerFocusController = DetailTrailerFocusController();
+  final FocusNode _requestButtonFocusNode = FocusNode(debugLabel: 'seerr_request');
+
+  @override
+  void dispose() {
+    _trailerController.dispose();
+    _detailTrailerFocusController.dispose();
+    _requestButtonFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -172,36 +185,52 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> with Mo
     final t = tokens(context);
     final provider = context.watch<SeerrProvider>();
     final status = _statusOf(provider);
+    final isTv = PlatformDetector.isTV();
+
+    final backdrop = _buildTrailerBackdrop(t);
+    final details = SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(isTv ? 24 : 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!isTv) _buildBackButton(),
+            if (isTv) const Spacer(),
+            Align(alignment: isTv ? Alignment.bottomLeft : Alignment.topLeft, child: _buildInfoPanel(status)),
+            if (!isTv) const Spacer(),
+          ],
+        ),
+      ),
+    );
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          _buildBackdropLayer(),
-          _buildScrims(t),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBackButton(),
-                  const Spacer(),
-                  Align(alignment: Alignment.bottomLeft, child: _buildInfoPanel(status)),
-                ],
+          DetailTrailerFocusLayout(
+            controller: _detailTrailerFocusController,
+            trailerController: _trailerController,
+            tmdbId: widget.tmdbId,
+            mediaType: widget.mediaType,
+            trailerEnabled: provider.isSignedIn,
+            backdrop: backdrop,
+            isTv: isTv,
+            details: isTv ? Stack(fit: StackFit.expand, children: [_buildScrims(t), details]) : details,
+          ),
+          if (isTv)
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: _buildBackButton(),
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  /// Full-bleed backdrop image behind everything else, with a muted trailer
-  /// fading in over it when settings/performance allow (the player resolves
-  /// the trailer itself from the TMDB id via Seerr + YouTube).
-  Widget _buildBackdropLayer() {
+  Widget _buildTrailerBackdrop(MonoTokens t) {
     final backdropUrl = tmdbBackdropUrl(_backdropPath) ?? tmdbPosterUrl(_posterPath, size: 'original');
     final Widget backdrop = backdropUrl == null
         ? const ColoredBox(color: Color(0xFF101010))
@@ -214,7 +243,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> with Mo
             placeholder: (context, url) => const ColoredBox(color: Color(0xFF101010)),
             errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Color(0xFF101010)),
           );
-    return InlineTrailerPlayer(tmdbId: widget.tmdbId, mediaType: widget.mediaType, child: backdrop);
+    return backdrop;
   }
 
   Widget _buildScrims(MonoTokens t) {
@@ -338,7 +367,12 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> with Mo
 
     return FocusableButton(
       autofocus: true,
+      focusNode: _requestButtonFocusNode,
       onPressed: enabled ? _onRequestPressed : null,
+      onNavigateUp: () {
+        _detailTrailerFocusController.engageFromDetails();
+        _trailerController.setUserEngaged(_detailTrailerFocusController.isEngaged);
+      },
       onBack: () => Navigator.of(context).maybePop(),
       child: FilledButton.icon(
         onPressed: enabled ? _onRequestPressed : null,

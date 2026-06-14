@@ -194,7 +194,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
           _buildWatchedToggleButton(metadata, actionButtonStyle, tvScale, showFocus: state.showFocus),
     );
 
-    // Seerr request button (Plezy-Seerr fork): shown when signed in to Seerr
+    // Seerr request button (Encorr fork): shown when signed in to Seerr
     // and the item maps to a TMDB id. Disabled states mirror the Seerr
     // availability status; otherwise it submits a request (movies confirm,
     // shows pick seasons).
@@ -252,9 +252,11 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       );
     }
 
-    // Trailer affordances (Plezy-Seerr fork): only while a background
+    // Trailer affordances (Encorr fork): only while a background
     // trailer is actually playing on this page.
-    final trailerAudioAction = _trailerController.isActive && _trailerController.canUnmute
+    final trailerAudioAction = _trailerController.isActive &&
+            _trailerController.isUserEngaged &&
+            _trailerController.canUnmute
         ? FocusableAction(
             debugLabel: 'detail_trailer_mute',
             onPressed: () => unawaited(_trailerController.toggleMute()),
