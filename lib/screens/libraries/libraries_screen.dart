@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../focus/focus_theme.dart';
 import '../../focus/focusable_action_bar.dart';
+import '../../focus/focusable_button.dart';
 import '../../focus/dpad_navigator.dart';
 import '../../focus/input_mode_tracker.dart';
 import '../../focus/key_event_utils.dart';
@@ -1239,6 +1240,7 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
   int? _originalIndex; // Original position before move (for cancel)
   List<MediaLibrary>? _originalOrder; // Original order before move (for cancel)
   final FocusNode _listFocusNode = FocusNode();
+  final FocusNode _closeFocusNode = FocusNode(debugLabel: 'LibraryManagementClose');
   final ScrollController _dialogScrollController = ScrollController();
   bool _backKeyDownSeen = false;
 
@@ -1251,8 +1253,32 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
   @override
   void dispose() {
     _listFocusNode.dispose();
+    _closeFocusNode.dispose();
     _dialogScrollController.dispose();
     super.dispose();
+  }
+
+  void _closeSheet() {
+    if (widget.isDialog) {
+      Navigator.pop(context);
+    } else {
+      OverlaySheetController.popAdaptive(context);
+    }
+  }
+
+  Widget _buildCloseButton() {
+    return FocusableButton(
+      focusNode: _closeFocusNode,
+      onPressed: _closeSheet,
+      onBack: _closeSheet,
+      onNavigateDown: () => _listFocusNode.requestFocus(),
+      useBackgroundFocus: true,
+      child: IconButton(
+        icon: const AppIcon(Symbols.close_rounded, fill: 1),
+        onPressed: _closeSheet,
+        tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+      ),
+    );
   }
 
   void _ensureFocusedVisible() {
@@ -1310,7 +1336,7 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
           _originalOrder = null;
         });
       } else {
-        OverlaySheetController.popAdaptive(context);
+        _closeSheet();
       }
     });
     if (backResult != KeyEventResult.ignored) {
@@ -1353,6 +1379,10 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
       }
     } else {
       // Navigation mode
+      if (key.isUpKey && _focusedIndex == 0) {
+        _closeFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
       if (key.isUpKey && _focusedIndex > 0) {
         setState(() {
           _focusedIndex--;
@@ -1461,12 +1491,7 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
                 ],
               ),
               automaticallyImplyLeading: false,
-              actions: [
-                IconButton(
-                  icon: const AppIcon(Symbols.close_rounded, fill: 1),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+              actions: [_buildCloseButton()],
             ),
             body: Focus(
               focusNode: _listFocusNode,
@@ -1500,10 +1525,7 @@ class _LibraryManagementSheetState extends State<_LibraryManagementSheet> {
                   Expanded(
                     child: Text(t.libraries.manageLibraries, style: const TextStyle(fontSize: 20, fontWeight: .bold)),
                   ),
-                  IconButton(
-                    icon: const AppIcon(Symbols.close_rounded, fill: 1),
-                    onPressed: () => OverlaySheetController.popAdaptive(context),
-                  ),
+                  _buildCloseButton(),
                 ],
               ),
             ),
