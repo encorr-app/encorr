@@ -18,7 +18,7 @@ class AppleTvRemotePlayPauseAction {
 }
 
 /// Bridges tvOS touch-surface events from Apple's iOS Remote app into the
-/// focus-tree key events Plezy already handles for D-pad navigation.
+/// focus-tree key events Encorr already handles for D-pad navigation.
 class AppleTvRemoteTouchService {
   static const String _channelName = 'flutter/gamepadtouchevent';
   static const double defaultSwipeThreshold = 180;

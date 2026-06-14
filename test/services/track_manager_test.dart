@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/mpv/mpv.dart';
-import 'package:plezy/services/track_manager.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/mpv/mpv.dart';
+import 'package:encorr/services/track_manager.dart';
 
 import '../test_helpers/prefs.dart';
 

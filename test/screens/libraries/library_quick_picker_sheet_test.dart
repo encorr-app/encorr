@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_library.dart';
-import 'package:plezy/screens/libraries/library_quick_picker_sheet.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_library.dart';
+import 'package:encorr/screens/libraries/library_quick_picker_sheet.dart';
 
 void main() {
   testWidgets('groups libraries by server and reports selection', (tester) async {

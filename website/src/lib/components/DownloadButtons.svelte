@@ -10,19 +10,19 @@
     {
       label: "x64 (Intel/AMD)",
       formats: [
-        { label: ".deb (Debian/Ubuntu)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-x64.deb" },
-        { label: ".rpm (Fedora/RHEL)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-x64.rpm" },
-        { label: ".pkg.tar.zst (Arch)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-x64.pkg.tar.zst" },
-        { label: ".tar.gz (Portable)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-x64.tar.gz" },
+        { label: ".deb (Debian/Ubuntu)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-x64.deb" },
+        { label: ".rpm (Fedora/RHEL)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-x64.rpm" },
+        { label: ".pkg.tar.zst (Arch)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-x64.pkg.tar.zst" },
+        { label: ".tar.gz (Portable)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-x64.tar.gz" },
       ],
     },
     {
       label: "ARM64",
       formats: [
-        { label: ".deb (Debian/Ubuntu)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-arm64.deb" },
-        { label: ".rpm (Fedora/RHEL)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-arm64.rpm" },
-        { label: ".pkg.tar.zst (Arch)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-arm64.pkg.tar.zst" },
-        { label: ".tar.gz (Portable)", url: "https://github.com/edde746/plezy/releases/latest/download/plezy-linux-arm64.tar.gz" },
+        { label: ".deb (Debian/Ubuntu)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-arm64.deb" },
+        { label: ".rpm (Fedora/RHEL)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-arm64.rpm" },
+        { label: ".pkg.tar.zst (Arch)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-arm64.pkg.tar.zst" },
+        { label: ".tar.gz (Portable)", url: "https://github.com/encorr-app/encorr/releases/latest/download/encorr-linux-arm64.tar.gz" },
       ],
     },
   ];
@@ -48,7 +48,7 @@
     </a>
 
     <a
-      href="https://play.google.com/store/apps/details?id=com.edde746.plezy"
+      href="https://play.google.com/store/apps/details?id=app.encorr.encorr"
       target="_blank"
       rel="noopener noreferrer"
       class="store-button"
@@ -71,7 +71,7 @@
   <!-- Desktop row -->
   <div class="desktop-buttons">
     <a
-      href="https://github.com/edde746/plezy/releases/latest/download/plezy-windows-installer.exe"
+      href="https://github.com/encorr-app/encorr/releases/latest/download/encorr-windows-installer.exe"
       class="desktop-button"
     >
       <WindowsIcon />
@@ -79,7 +79,7 @@
     </a>
 
     <a
-      href="https://github.com/edde746/plezy/releases/latest/download/plezy-macos.dmg"
+      href="https://github.com/encorr-app/encorr/releases/latest/download/encorr-macos.dmg"
       class="desktop-button"
     >
       <AppleIcon />

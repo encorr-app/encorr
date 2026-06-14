@@ -52,7 +52,7 @@ class TvDetectionService {
   }
 
   static const bool _tvosBuild = bool.fromEnvironment('TVOS_BUILD');
-  static const MethodChannel _deviceChannel = MethodChannel('com.plezy/device');
+  static const MethodChannel _deviceChannel = MethodChannel('com.encorr/device');
 
   Future<void> _detect(bool forceTv) async {
     if (_initialized) return;

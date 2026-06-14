@@ -3,11 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart' show ImageProvider, MemoryImage;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/connection/connection.dart';
-import 'package:plezy/media/media_source_info.dart';
-import 'package:plezy/services/jellyfin_client.dart';
-import 'package:plezy/services/jellyfin_trickplay_service.dart';
-import 'package:plezy/services/scrub_preview_source.dart';
+import 'package:encorr/connection/connection.dart';
+import 'package:encorr/media/media_source_info.dart';
+import 'package:encorr/services/jellyfin_client.dart';
+import 'package:encorr/services/jellyfin_trickplay_service.dart';
+import 'package:encorr/services/scrub_preview_source.dart';
 
 JellyfinConnection _conn() => JellyfinConnection(
   id: 'srv-1/user-1',

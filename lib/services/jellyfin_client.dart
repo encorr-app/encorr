@@ -125,9 +125,9 @@ class JellyfinClient
       // Tests / non-platform contexts — keep the fallback version.
     }
     final authHeader = buildJellyfinAuthHeader(
-      clientName: 'Plezy',
+      clientName: 'Encorr',
       clientVersion: version,
-      deviceName: 'Plezy',
+      deviceName: 'Encorr',
       deviceId: connection.deviceId,
       accessToken: connection.accessToken,
     );

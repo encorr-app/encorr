@@ -1,19 +1,19 @@
 import 'dart:convert';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/connection/connection.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/media/media_server_client.dart';
-import 'package:plezy/models/plex/plex_config.dart';
-import 'package:plezy/services/data_aggregation_service.dart';
-import 'package:plezy/services/jellyfin_client.dart';
-import 'package:plezy/services/multi_server_manager.dart';
-import 'package:plezy/services/plex_api_cache.dart';
-import 'package:plezy/services/plex_client.dart';
+import 'package:encorr/connection/connection.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/media/media_server_client.dart';
+import 'package:encorr/models/plex/plex_config.dart';
+import 'package:encorr/services/data_aggregation_service.dart';
+import 'package:encorr/services/jellyfin_client.dart';
+import 'package:encorr/services/multi_server_manager.dart';
+import 'package:encorr/services/plex_api_cache.dart';
+import 'package:encorr/services/plex_client.dart';
 
 JellyfinConnection _conn() => JellyfinConnection(
   id: 'srv-1/user-1',
@@ -74,7 +74,7 @@ void main() {
           baseUrl: 'https://plex.example.com',
           token: 'token',
           clientIdentifier: 'client-id',
-          product: 'Plezy',
+          product: 'Encorr',
           version: 'test',
         ),
         serverId: ServerId('plex-1'),
@@ -132,7 +132,7 @@ void main() {
           baseUrl: 'https://plex.example.com',
           token: 'token',
           clientIdentifier: 'client-id',
-          product: 'Plezy',
+          product: 'Encorr',
           version: 'test',
         ),
         serverId: ServerId('plex-1'),
@@ -177,7 +177,7 @@ void main() {
           baseUrl: 'https://plex.example.com',
           token: 'token',
           clientIdentifier: 'client-id',
-          product: 'Plezy',
+          product: 'Encorr',
           version: 'test',
         ),
         serverId: ServerId('plex-1'),
@@ -254,7 +254,7 @@ void main() {
           baseUrl: 'https://plex.example.com',
           token: 'token',
           clientIdentifier: 'client-id',
-          product: 'Plezy',
+          product: 'Encorr',
           version: 'test',
         ),
         serverId: ServerId('plex-1'),
@@ -442,7 +442,7 @@ void main() {
           baseUrl: 'https://plex.example.com',
           token: 'token',
           clientIdentifier: 'client-id',
-          product: 'Plezy',
+          product: 'Encorr',
           version: 'test',
         ),
         serverId: ServerId('plex-1'),

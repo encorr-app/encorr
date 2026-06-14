@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/services/base_shared_preferences_service.dart';
-import 'package:plezy/services/settings_export_service.dart';
+import 'package:encorr/services/base_shared_preferences_service.dart';
+import 'package:encorr/services/settings_export_service.dart';
 
 import '../test_helpers/prefs.dart';
 
@@ -53,7 +53,7 @@ void main() {
       await prefs.setBool('flag_a', true);
       await prefs.setInt('count_a', 42);
       await prefs.setDouble('volume', 0.75);
-      await prefs.setString('name', 'plezy');
+      await prefs.setString('name', 'encorr');
       await prefs.setStringList('list_a', const ['x', 'y']);
 
       final out = SettingsExportService.buildExportMap(prefs);
@@ -62,7 +62,7 @@ void main() {
       expect(p['flag_a'], {'type': 'bool', 'value': true});
       expect(p['count_a'], {'type': 'int', 'value': 42});
       expect(p['volume'], {'type': 'double', 'value': 0.75});
-      expect(p['name'], {'type': 'string', 'value': 'plezy'});
+      expect(p['name'], {'type': 'string', 'value': 'encorr'});
       expect(p['list_a'], {
         'type': 'stringList',
         'value': ['x', 'y'],
@@ -478,7 +478,7 @@ void main() {
       final result = await SettingsExportService.applyImportMap(decoded, prefs, currentUserUuid: 'alice');
 
       // 6 expected keys round-trip; the count includes the unrelated
-      // `plezy_legacy_prefs_migrated_v1` flag the cache plants. We only assert
+      // `encorr_legacy_prefs_migrated_v1` flag the cache plants. We only assert
       // it is at LEAST our expected six keys, not an exact count.
       expect(result.keysImported, greaterThanOrEqualTo(6));
       expect(result.keysSkipped, 0);
@@ -505,7 +505,7 @@ void main() {
 
       // Bob imports. Scoped base key gets re-applied with bob's prefix.
       final result = await SettingsExportService.applyImportMap(exportMap, prefs, currentUserUuid: 'bob');
-      // The cache plants `plezy_legacy_prefs_migrated_v1` on first init, so
+      // The cache plants `encorr_legacy_prefs_migrated_v1` on first init, so
       // the export count includes that flag too. Just confirm the scoped
       // value made it through.
       expect(result.keysImported, greaterThanOrEqualTo(1));

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/i18n/strings.g.dart';
-import 'package:plezy/providers/multi_server_provider.dart';
-import 'package:plezy/services/data_aggregation_service.dart';
-import 'package:plezy/services/multi_server_manager.dart';
-import 'package:plezy/widgets/server_activities_button.dart';
+import 'package:encorr/i18n/strings.g.dart';
+import 'package:encorr/providers/multi_server_provider.dart';
+import 'package:encorr/services/data_aggregation_service.dart';
+import 'package:encorr/services/multi_server_manager.dart';
+import 'package:encorr/widgets/server_activities_button.dart';
 import 'package:provider/provider.dart';
 
 void main() {

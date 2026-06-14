@@ -3,9 +3,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/focus/focusable_text_field.dart';
-import 'package:plezy/services/gamepad_service.dart';
-import 'package:plezy/utils/platform_detector.dart';
+import 'package:encorr/focus/focusable_text_field.dart';
+import 'package:encorr/services/gamepad_service.dart';
+import 'package:encorr/utils/platform_detector.dart';
 
 void main() {
   tearDown(() {
@@ -507,7 +507,7 @@ void main() {
     TvDetectionService.debugSetAppleTVOverride(null);
     await TvDetectionService.getInstance(forceTv: true);
     TvDetectionService.setForceTVSync(true);
-    const channel = MethodChannel('com.plezy/text_input');
+    const channel = MethodChannel('com.encorr/text_input');
     final calls = <MethodCall>[];
     final gamepadFocusStates = <bool>[];
     GamepadService.debugNativeTextInputFocusHandler = (focused) async {

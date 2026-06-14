@@ -10,7 +10,7 @@ part 'profile.freezed.dart';
 /// Top-level profile — the user-facing identity in the app.
 ///
 /// Two kinds:
-/// - [LocalProfile]: a Plezy-only profile created by the user. May have
+/// - [LocalProfile]: a Encorr-only profile created by the user. May have
 ///   an optional 4-digit PIN.
 /// - [PlexHomeProfile]: auto-surfaced from a connected Plex account's
 ///   Home users. PIN protection is handled server-side by Plex via the
@@ -195,7 +195,7 @@ enum ProfileKind {
 /// Salted SHA-256 of the PIN. The salt is fixed (per-app) — this is a
 /// social-barrier hash, not real authentication. The threat model is
 /// "kid bypassing parent's profile", not "adversary with device access".
-const _pinSalt = 'plezy-app-profile-pin-v1';
+const _pinSalt = 'encorr-app-profile-pin-v1';
 
 String computePinHash(String rawPin) {
   final digest = sha256.convert(utf8.encode('$_pinSalt:$rawPin'));

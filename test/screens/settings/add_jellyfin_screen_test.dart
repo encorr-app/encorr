@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/focus/input_mode_tracker.dart';
-import 'package:plezy/profiles/profile.dart';
-import 'package:plezy/screens/settings/add_jellyfin_screen.dart';
-import 'package:plezy/services/jellyfin_auth_service.dart';
-import 'package:plezy/services/jellyfin_lan_discovery_service.dart';
-import 'package:plezy/utils/platform_detector.dart';
+import 'package:encorr/focus/input_mode_tracker.dart';
+import 'package:encorr/profiles/profile.dart';
+import 'package:encorr/screens/settings/add_jellyfin_screen.dart';
+import 'package:encorr/services/jellyfin_auth_service.dart';
+import 'package:encorr/services/jellyfin_lan_discovery_service.dart';
+import 'package:encorr/utils/platform_detector.dart';
 
 import '../../test_helpers/prefs.dart';
 
@@ -19,7 +19,7 @@ Profile _profile(String id) =>
 
 JellyfinConnectionAuthService _jellyfinAuthService({bool quickConnectEnabled = false, Duration? initiateDelay}) {
   return JellyfinConnectionAuthService(
-    clientName: 'Plezy',
+    clientName: 'Encorr',
     clientVersion: 'test',
     deviceName: 'TestDevice',
     testHttpClientFactory: () => MockClient((request) async {
@@ -54,7 +54,7 @@ JellyfinConnectionAuthService _jellyfinAuthService({bool quickConnectEnabled = f
 
 JellyfinConnectionAuthService _jellyfinAuthServiceForBareHost() {
   return JellyfinConnectionAuthService(
-    clientName: 'Plezy',
+    clientName: 'Encorr',
     clientVersion: 'test',
     deviceName: 'TestDevice',
     testHttpClientFactory: () => MockClient((request) async {

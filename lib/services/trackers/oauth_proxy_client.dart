@@ -11,14 +11,14 @@ import '../../utils/platform_http_client_stub.dart'
 import '../../watch_together/services/watch_together_peer_service.dart';
 import 'tracker_constants.dart';
 
-/// Client for the Plezy relay's `/auth/*` OAuth proxy.
+/// Client for the Encorr relay's `/auth/*` OAuth proxy.
 ///
 /// The proxy drives the full authorization-code flow server-side: device calls
 /// [start] to get a QR URL, user scans on a phone to complete auth, device
 /// long-polls [poll] until tokens arrive. No local HTTP listener or custom URL
 /// scheme is required — works identically on TVs without a browser.
 class OAuthProxyClient {
-  /// Public base URL of the Plezy relay; colocated with Watch Together.
+  /// Public base URL of the Encorr relay; colocated with Watch Together.
   static String get baseUrl => WatchTogetherPeerService.defaultBaseUrl;
 
   final http.Client _http;

@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Plezy"
+    "title": "Encorr"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -86,7 +86,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "supportDeveloper": "Apoya Plezy",
+    "supportDeveloper": "Apoya Encorr",
     "supportDeveloperDescription": "Dona vía Liberapay para financiar el desarrollo",
     "language": "Idioma",
     "theme": "Tema",
@@ -193,7 +193,7 @@
     "importSettingsConfirm": "Esto reemplazará tu configuración actual. ¿Continuar?",
     "importSettingsSuccess": "Configuración importada",
     "importSettingsFailed": "No se pudo importar la configuración",
-    "importSettingsInvalidFile": "Este archivo no es una exportación válida de Plezy",
+    "importSettingsInvalidFile": "Este archivo no es una exportación válida de Encorr",
     "importSettingsNoUser": "Inicia sesión antes de importar la configuración",
     "shortcutsReset": "Atajos restablecidos a los valores predeterminados",
     "about": "Acerca de",
@@ -274,7 +274,7 @@
     "forceTvMode": "Forzar modo TV",
     "forceTvModeDescription": "Forzar diseño TV. Para dispositivos que no lo detectan. Requiere reinicio.",
     "startInFullscreen": "Iniciar en pantalla completa",
-    "startInFullscreenDescription": "Abrir Plezy en modo pantalla completa al iniciar",
+    "startInFullscreenDescription": "Abrir Encorr en modo pantalla completa al iniciar",
     "exitFullscreenOnPlayerClose": "Salir de pantalla completa al cerrar el reproductor",
     "exitFullscreenOnPlayerCloseDescription": "Salir automáticamente del modo de pantalla completa al cerrar el reproductor de vídeo",
     "autoHidePerformanceOverlay": "Ocultar superposición de rendimiento automáticamente",
@@ -282,7 +282,7 @@
     "showNavBarLabels": "Mostrar etiquetas de la barra de navegación",
     "showNavBarLabelsDescription": "Mostrar etiquetas de texto bajo los iconos de la barra de navegación",
     "startupSection": "Sección de inicio",
-    "startupSectionDescription": "Elige qué sección abre Plezy al iniciarse",
+    "startupSectionDescription": "Elige qué sección abre Encorr al iniciarse",
     "liveTvDefaultFavorites": "Canales favoritos por defecto",
     "liveTvDefaultFavoritesDescription": "Mostrar solo canales favoritos al abrir TV en vivo",
     "display": "Pantalla",
@@ -582,7 +582,7 @@
     "confirmAction": "Confirmar Acción"
   },
   "profiles": {
-    "addPlezyProfile": "Añadir perfil de Plezy",
+    "addEncorrProfile": "Añadir perfil de Encorr",
     "switchingProfile": "Cambiando de perfil…",
     "deleteThisProfileTitle": "¿Eliminar este perfil?",
     "deleteThisProfileMessage": "Eliminar ${displayName}. Las conexiones no se verán afectadas.",
@@ -650,7 +650,7 @@
     "sessionExpiredMany": "Sesión caducada para ${count} servidores",
     "signInAgain": "Iniciar sesión de nuevo",
     "editJellyfinTitle": "Editar conexión de Jellyfin",
-    "editJellyfinIntro": "Añade o elimina URL para ${serverName}. Plezy usará la URL accesible con menor latencia."
+    "editJellyfinIntro": "Añade o elimina URL para ${serverName}. Encorr usará la URL accesible con menor latencia."
   },
   "discover": {
     "title": "Descubrir",
@@ -1090,19 +1090,19 @@
       "minimize": "Minimizar"
     },
     "pairing": {
-      "discoveryDescription": "Los dispositivos Plezy con la misma cuenta Plex aparecen aquí",
+      "discoveryDescription": "Los dispositivos Encorr con la misma cuenta Plex aparecen aquí",
       "hostAddressHint": "192.168.1.100:48632",
       "connecting": "Conectando...",
       "searchingForDevices": "Buscando dispositivos...",
       "noDevicesFound": "No se encontraron dispositivos en tu red",
-      "noDevicesHint": "Abre Plezy en escritorio y usa el mismo WiFi",
+      "noDevicesHint": "Abre Encorr en escritorio y usa el mismo WiFi",
       "availableDevices": "Dispositivos disponibles",
       "manualConnection": "Conexión manual",
       "cryptoInitFailed": "No se pudo iniciar la conexión segura. Inicia sesión en Plex primero.",
       "validationHostRequired": "Ingresa la dirección del host",
       "validationHostFormat": "El formato debe ser IP:puerto (ej. 192.168.1.100:48632)",
       "connectionTimedOut": "Tiempo de conexión agotado. Usa la misma red en ambos dispositivos.",
-      "sessionNotFound": "Dispositivo no encontrado. Asegúrate de que Plezy esté en ejecución en el host.",
+      "sessionNotFound": "Dispositivo no encontrado. Asegúrate de que Encorr esté en ejecución en el host.",
       "authFailed": "Autenticación fallida. Ambos dispositivos necesitan la misma cuenta Plex.",
       "failedToConnect": "Error al conectar: ${error}"
     },
@@ -1311,11 +1311,11 @@
     "connected": "Conectado",
     "connectedAs": "Conectado como @${username}",
     "disconnectConfirm": "¿Desconectar cuenta de Trakt?",
-    "disconnectConfirmBody": "Plezy dejará de enviar eventos a Trakt. Puedes reconectar cuando quieras.",
+    "disconnectConfirmBody": "Encorr dejará de enviar eventos a Trakt. Puedes reconectar cuando quieras.",
     "scrobble": "Scrobbling en tiempo real",
     "scrobbleDescription": "Enviar eventos de reproducción, pausa y parada a Trakt durante la reproducción.",
     "watchedSync": "Sincronizar estado de visto",
-    "watchedSyncDescription": "Cuando marques elementos como vistos en Plezy, también se marcarán en Trakt."
+    "watchedSyncDescription": "Cuando marques elementos como vistos en Encorr, también se marcarán en Trakt."
   },
   "trackers": {
     "title": "Rastreadores",
@@ -1325,7 +1325,7 @@
     "scrobble": "Registrar progreso automáticamente",
     "scrobbleDescription": "Actualiza tu lista cuando termines un episodio o película.",
     "disconnectConfirm": "¿Desconectar ${service}?",
-    "disconnectConfirmBody": "Plezy dejará de actualizar ${service}. Reconecta cuando quieras.",
+    "disconnectConfirmBody": "Encorr dejará de actualizar ${service}. Reconecta cuando quieras.",
     "connectFailed": "No se pudo conectar a ${service}. Inténtalo de nuevo.",
     "services": {
       "mal": "MyAnimeList",
@@ -1333,7 +1333,7 @@
       "simkl": "Simkl"
     },
     "deviceCode": {
-      "title": "Activar Plezy en ${service}",
+      "title": "Activar Encorr en ${service}",
       "body": "Visita ${url} e introduce este código:",
       "openToActivate": "Abrir ${service} para activar",
       "waitingForAuthorization": "Esperando autorización…",

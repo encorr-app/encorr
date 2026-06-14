@@ -35,31 +35,31 @@
   ];
 
   const phoneShots = [
-    { image: phoneHomeImage, alt: 'Plezy home screen' },
-    { image: phoneLibraryImage, alt: 'Plezy library view' },
-    { image: phoneMdImage, alt: 'Plezy media details' },
-    { image: phoneSearchImage, alt: 'Plezy search' },
+    { image: phoneHomeImage, alt: 'Encorr home screen' },
+    { image: phoneLibraryImage, alt: 'Encorr library view' },
+    { image: phoneMdImage, alt: 'Encorr media details' },
+    { image: phoneSearchImage, alt: 'Encorr search' },
   ];
 
   const tabletShots = [
-    { image: tabletHomeImage, alt: 'Plezy on tablet - home' },
-    { image: tabletLibraryImage, alt: 'Plezy on tablet - library' },
-    { image: tabletMdImage, alt: 'Plezy on tablet - media details' },
-    { image: tabletPlayerImage, alt: 'Plezy on tablet - video player' },
+    { image: tabletHomeImage, alt: 'Encorr on tablet - home' },
+    { image: tabletLibraryImage, alt: 'Encorr on tablet - library' },
+    { image: tabletMdImage, alt: 'Encorr on tablet - media details' },
+    { image: tabletPlayerImage, alt: 'Encorr on tablet - video player' },
   ];
 
   const desktopShots = [
-    { image: desktopHomeImage, alt: 'Plezy on desktop - home' },
-    { image: desktopLibraryImage, alt: 'Plezy on desktop - library' },
-    { image: desktopMdImage, alt: 'Plezy on desktop - media details' },
-    { image: desktopPlayerImage, alt: 'Plezy on desktop - video player' },
+    { image: desktopHomeImage, alt: 'Encorr on desktop - home' },
+    { image: desktopLibraryImage, alt: 'Encorr on desktop - library' },
+    { image: desktopMdImage, alt: 'Encorr on desktop - media details' },
+    { image: desktopPlayerImage, alt: 'Encorr on desktop - video player' },
   ];
 
   const tvShots = [
-    { image: tvHomeImage, alt: 'Plezy on TV - home' },
-    { image: tvLibraryImage, alt: 'Plezy on TV - library' },
-    { image: tvMdImage, alt: 'Plezy on TV - media details' },
-    { image: tvPlayerImage, alt: 'Plezy on TV - video player' },
+    { image: tvHomeImage, alt: 'Encorr on TV - home' },
+    { image: tvLibraryImage, alt: 'Encorr on TV - library' },
+    { image: tvMdImage, alt: 'Encorr on TV - media details' },
+    { image: tvPlayerImage, alt: 'Encorr on TV - video player' },
   ];
 
   const screenshots: Record<

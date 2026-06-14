@@ -1,29 +1,29 @@
 import 'dart:async';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 import 'dart:convert';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/connection/connection.dart';
-import 'package:plezy/connection/connection_registry.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/models/plex/plex_home_user.dart';
-import 'package:plezy/profiles/active_profile_binder.dart';
-import 'package:plezy/profiles/active_profile_provider.dart';
-import 'package:plezy/profiles/plex_home_service.dart';
-import 'package:plezy/profiles/profile.dart';
-import 'package:plezy/profiles/profile_connection.dart';
-import 'package:plezy/profiles/profile_connection_registry.dart';
-import 'package:plezy/profiles/profile_registry.dart';
-import 'package:plezy/providers/multi_server_provider.dart';
-import 'package:plezy/services/data_aggregation_service.dart';
-import 'package:plezy/services/multi_server_manager.dart';
-import 'package:plezy/services/plex_auth_service.dart';
-import 'package:plezy/services/storage_service.dart';
-import 'package:plezy/utils/media_server_http_client.dart';
-import 'package:plezy/utils/media_server_timeouts.dart';
+import 'package:encorr/connection/connection.dart';
+import 'package:encorr/connection/connection_registry.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/models/plex/plex_home_user.dart';
+import 'package:encorr/profiles/active_profile_binder.dart';
+import 'package:encorr/profiles/active_profile_provider.dart';
+import 'package:encorr/profiles/plex_home_service.dart';
+import 'package:encorr/profiles/profile.dart';
+import 'package:encorr/profiles/profile_connection.dart';
+import 'package:encorr/profiles/profile_connection_registry.dart';
+import 'package:encorr/profiles/profile_registry.dart';
+import 'package:encorr/providers/multi_server_provider.dart';
+import 'package:encorr/services/data_aggregation_service.dart';
+import 'package:encorr/services/multi_server_manager.dart';
+import 'package:encorr/services/plex_auth_service.dart';
+import 'package:encorr/services/storage_service.dart';
+import 'package:encorr/utils/media_server_http_client.dart';
+import 'package:encorr/utils/media_server_timeouts.dart';
 
 import '../test_helpers/prefs.dart';
 

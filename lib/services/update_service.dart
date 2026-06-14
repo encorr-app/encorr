@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:auto_updater/auto_updater.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:logger/logger.dart';
-import 'package:plezy/utils/media_server_http_client.dart';
+import 'package:encorr/utils/media_server_http_client.dart';
 import 'base_shared_preferences_service.dart';
 
 /// Service to check for new versions on GitHub
@@ -14,8 +14,8 @@ import 'base_shared_preferences_service.dart';
 /// On all other platforms: falls back to GitHub API check + browser link dialog.
 class UpdateService {
   static final Logger _logger = Logger();
-  static const String _githubRepo = 'edde746/plezy';
-  static const String _feedUrl = 'https://cdn.jsdelivr.net/gh/edde746/plezy@appcast/appcast.xml';
+  static const String _githubRepo = 'encorr-app/encorr';
+  static const String _feedUrl = 'https://cdn.jsdelivr.net/gh/encorr-app/encorr@appcast/appcast.xml';
 
   static const String _keySkippedVersion = 'update_skipped_version';
   static const String _keyLastCheckTime = 'update_last_check_time';

@@ -25,7 +25,7 @@ on:
         type: boolean
 
 env:
-  SENTRY_DART_DEFINE: ${{ github.repository == 'edde746/plezy' && '--dart-define=ENABLE_SENTRY=true' || '' }}
+  SENTRY_DART_DEFINE: ${{ github.repository == 'encorr-app/encorr' && '--dart-define=ENABLE_SENTRY=true' || '' }}
   GIT_COMMIT_DART_DEFINE: --dart-define=GIT_COMMIT=${{ github.sha }}
   SENTRY_ENV_DART_DEFINE: --dart-define=SENTRY_ENVIRONMENT=github
   DONATIONS_DART_DEFINE: --dart-define=ENABLE_DONATIONS=true
@@ -96,8 +96,8 @@ jobs:
       - name: Build APKs
         run: flutter build apk --release --split-per-abi --dart-define=ENABLE_UPDATE_CHECK=true ${{ env.SENTRY_DART_DEFINE }} ${{ env.GIT_COMMIT_DART_DEFINE }} ${{ env.SENTRY_ENV_DART_DEFINE }} --dart-define=SENTRY_DIST=github-android-apk ${{ env.DONATIONS_DART_DEFINE }} --obfuscate --split-debug-info=debug-info/android-apk --extra-gen-snapshot-options=--save-obfuscation-map=debug-info/android-apk/obfuscation.map.json
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
           SENTRY_DIST: github-android-apk
@@ -109,26 +109,26 @@ jobs:
 
       - name: Package APKs
         run: |
-          tar -czf plezy-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/plezy.apk/'
-          tar -czf plezy-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/plezy.apk/'
-          tar -czf plezy-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/plezy.apk/'
+          tar -czf encorr-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/encorr.apk/'
+          tar -czf encorr-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/encorr.apk/'
+          tar -czf encorr-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/encorr.apk/'
 
       - name: Attest APKs
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
+            encorr-android-arm64-v8a.tar.gz
+            encorr-android-armeabi-v7a.tar.gz
+            encorr-android-x86_64.tar.gz
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
+            encorr-android-arm64-v8a.tar.gz
+            encorr-android-armeabi-v7a.tar.gz
+            encorr-android-x86_64.tar.gz
 
   build-ios:
     if: ${{ inputs.build_ios }}
@@ -172,8 +172,8 @@ jobs:
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign --dart-define=ENABLE_UPDATE_CHECK=true ${{ env.SENTRY_DART_DEFINE }} ${{ env.GIT_COMMIT_DART_DEFINE }} ${{ env.SENTRY_ENV_DART_DEFINE }} --dart-define=SENTRY_DIST=github-ios ${{ env.DONATIONS_DART_DEFINE }} --split-debug-info=debug-info/ios
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
           SENTRY_DIST: github-ios
@@ -183,18 +183,18 @@ jobs:
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r plezy-ios.ipa Payload
+          zip -r encorr-ios.ipa Payload
 
       - name: Attest IPA
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: plezy-ios.ipa
+          subject-path: encorr-ios.ipa
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
-          path: plezy-ios.ipa
+          path: encorr-ios.ipa
 
   build-macos:
     if: ${{ inputs.build_macos }}
@@ -238,8 +238,8 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release --dart-define=ENABLE_UPDATE_CHECK=true ${{ env.SENTRY_DART_DEFINE }} ${{ env.GIT_COMMIT_DART_DEFINE }} ${{ env.SENTRY_ENV_DART_DEFINE }} --dart-define=SENTRY_DIST=github-macos ${{ env.DONATIONS_DART_DEFINE }} --split-debug-info=debug-info/macos
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
           SENTRY_DIST: github-macos
@@ -274,7 +274,7 @@ jobs:
           IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -1 | grep -o '".*"' | tr -d '"')
           echo "Signing with identity: $IDENTITY"
 
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Encorr.app"
 
           # Deep sign everything inside-out: executables, dylibs, XPC services, app bundles, frameworks
           find "$APP_PATH/Contents/Frameworks" \( -name "*.xpc" -o -name "*.app" -o -name "*.framework" -o -name "*.dylib" \) -print0 \
@@ -296,7 +296,7 @@ jobs:
 
       - name: Verify Signature
         run: |
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Encorr.app"
           echo "Verifying signature..."
           codesign -dvvv "$APP_PATH"
           echo "Verifying signed entitlements..."
@@ -312,7 +312,7 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Encorr.app"
 
           # Create a temporary ZIP for notarization submission
           echo "Creating ZIP for notarization..."
@@ -337,9 +337,9 @@ jobs:
       - name: Create DMG
         run: |
           mkdir -p dmg-staging
-          cp -R build/macos/Build/Products/Release/Plezy.app dmg-staging/
+          cp -R build/macos/Build/Products/Release/Encorr.app dmg-staging/
           ln -s /Applications dmg-staging/Applications
-          hdiutil create -format ULMO -srcfolder dmg-staging -volname "Plezy" plezy-macos.dmg
+          hdiutil create -format ULMO -srcfolder dmg-staging -volname "Encorr" encorr-macos.dmg
 
       - name: Sign DMG for Sparkle (EdDSA)
         if: env.SPARKLE_PRIVATE_KEY != ''
@@ -347,17 +347,17 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
           printf -- "-----BEGIN ED25519 PRIVATE KEY-----\n%s\n-----END ED25519 PRIVATE KEY-----\n" "$SPARKLE_PRIVATE_KEY" > ed25519_key.pem
-          OUTPUT=$(dart run auto_updater:sign_update plezy-macos.dmg ed25519_key.pem)
+          OUTPUT=$(dart run auto_updater:sign_update encorr-macos.dmg ed25519_key.pem)
           rm ed25519_key.pem
           # Extract edSignature value from output like: sparkle:edSignature="..." length="..."
           SIGNATURE=$(echo "$OUTPUT" | grep -o 'edSignature="[^"]*"' | sed 's/edSignature="//;s/"//')
           echo "MACOS_ED_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
-          echo "MACOS_DMG_SIZE=$(stat -f%z plezy-macos.dmg)" >> $GITHUB_ENV
+          echo "MACOS_DMG_SIZE=$(stat -f%z encorr-macos.dmg)" >> $GITHUB_ENV
 
       - name: Attest macOS DMG
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: plezy-macos.dmg
+          subject-path: encorr-macos.dmg
 
       - name: Write macOS signature metadata
         run: |
@@ -369,7 +369,7 @@ jobs:
         with:
           name: macos-dmg
           path: |
-            plezy-macos.dmg
+            encorr-macos.dmg
             macos-ed-signature.txt
             macos-dmg-size.txt
 
@@ -408,8 +408,8 @@ jobs:
       - name: Build Windows x64
         run: flutter build windows --release --dart-define=ENABLE_UPDATE_CHECK=true ${{ env.SENTRY_DART_DEFINE }} ${{ env.GIT_COMMIT_DART_DEFINE }} ${{ env.SENTRY_ENV_DART_DEFINE }} --dart-define=SENTRY_DIST=github-windows-x64 ${{ env.DONATIONS_DART_DEFINE }} --split-debug-info=debug-info/windows-x64
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         shell: pwsh
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
@@ -464,8 +464,8 @@ jobs:
       - name: Build Windows arm64
         run: flutter build windows --release --dart-define=ENABLE_UPDATE_CHECK=true ${{ env.SENTRY_DART_DEFINE }} ${{ env.GIT_COMMIT_DART_DEFINE }} ${{ env.SENTRY_ENV_DART_DEFINE }} --dart-define=SENTRY_DIST=github-windows-arm64 ${{ env.DONATIONS_DART_DEFINE }} --split-debug-info=debug-info/windows-arm64
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         shell: pwsh
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
@@ -526,39 +526,39 @@ jobs:
           Push-Location _signer
           dart pub get
           Set-Content -Path ed25519_key.pem -Value $env:SPARKLE_PRIVATE_KEY -Encoding ascii -NoNewline
-          $output = dart run sign.dart ../plezy-windows-installer.exe ed25519_key.pem
+          $output = dart run sign.dart ../encorr-windows-installer.exe ed25519_key.pem
           Pop-Location
           Remove-Item _signer -Recurse -Force
           $sig = [regex]::Match($output, 'edSignature="([^"]*)"').Groups[1].Value
           Set-Content -Path win-ed-signature.txt -Value $sig -Encoding ascii -NoNewline
-          Set-Content -Path win-installer-size.txt -Value (Get-Item plezy-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
+          Set-Content -Path win-installer-size.txt -Value (Get-Item encorr-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
 
       - name: Attest Windows artifacts
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            plezy-windows-x64-portable.7z
-            plezy-windows-arm64-portable.7z
-            plezy-windows-installer.exe
+            encorr-windows-x64-portable.7z
+            encorr-windows-arm64-portable.7z
+            encorr-windows-installer.exe
 
       - name: Upload x64 portable
         uses: actions/upload-artifact@v4
         with:
           name: windows-x64-portable
-          path: plezy-windows-x64-portable.7z
+          path: encorr-windows-x64-portable.7z
 
       - name: Upload arm64 portable
         uses: actions/upload-artifact@v4
         with:
           name: windows-arm64-portable
-          path: plezy-windows-arm64-portable.7z
+          path: encorr-windows-arm64-portable.7z
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
           path: |
-            plezy-windows-installer.exe
+            encorr-windows-installer.exe
             win-ed-signature.txt
             win-installer-size.txt
 
@@ -631,8 +631,8 @@ jobs:
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/libmpv-prefix/lib/pkgconfig:${{ github.workspace }}/libmpv-prefix/lib/x86_64-linux-gnu/pkgconfig
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
           SENTRY_DIST: github-linux-x64
@@ -652,12 +652,12 @@ jobs:
         run: bash linux/packaging/bundle-libs.sh build/linux/x64/release/bundle
 
       - name: Copy wrapper script into bundle
-        run: cp linux/packaging/plezy.sh build/linux/x64/release/bundle/plezy.sh
+        run: cp linux/packaging/encorr.sh build/linux/x64/release/bundle/encorr.sh
 
       - name: Verify no missing dependencies
         run: |
           cd build/linux/x64/release/bundle
-          MISSING=$(LD_LIBRARY_PATH=lib ldd ./plezy 2>&1 | grep "not found" || true)
+          MISSING=$(LD_LIBRARY_PATH=lib ldd ./encorr 2>&1 | grep "not found" || true)
           if [[ -n "$MISSING" ]]; then
             echo "ERROR: Unresolved dependencies found:" >&2
             echo "$MISSING" >&2
@@ -668,26 +668,26 @@ jobs:
       - name: Create tarball
         run: |
           cd build/linux/x64/release/bundle
-          tar -czf $GITHUB_WORKSPACE/plezy-linux-x64.tar.gz *
+          tar -czf $GITHUB_WORKSPACE/encorr-linux-x64.tar.gz *
 
       - name: Attest Linux x64 artifacts
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            plezy-linux-x64.tar.gz
-            plezy-linux-x64.deb
-            plezy-linux-x64.rpm
-            plezy-linux-x64.pkg.tar.zst
+            encorr-linux-x64.tar.gz
+            encorr-linux-x64.deb
+            encorr-linux-x64.rpm
+            encorr-linux-x64.pkg.tar.zst
 
       - name: Upload Linux x64 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-x64
           path: |
-            plezy-linux-x64.tar.gz
-            plezy-linux-x64.deb
-            plezy-linux-x64.rpm
-            plezy-linux-x64.pkg.tar.zst
+            encorr-linux-x64.tar.gz
+            encorr-linux-x64.deb
+            encorr-linux-x64.rpm
+            encorr-linux-x64.pkg.tar.zst
 
   build-linux-arm64:
     if: ${{ inputs.build_linux }}
@@ -758,8 +758,8 @@ jobs:
         env:
           PKG_CONFIG_PATH: ${{ github.workspace }}/libmpv-prefix/lib/pkgconfig:${{ github.workspace }}/libmpv-prefix/lib/aarch64-linux-gnu/pkgconfig
 
-      - name: Upload symbols to bugs.plezy.app
-        if: github.repository == 'edde746/plezy'
+      - name: Upload symbols to bugs.encorr.app
+        if: github.repository == 'encorr-app/encorr'
         env:
           BUGS_ADMIN_TOKEN: ${{ secrets.BUGS_ADMIN_TOKEN }}
           SENTRY_DIST: github-linux-arm64
@@ -789,12 +789,12 @@ jobs:
         run: bash linux/packaging/bundle-libs.sh ${{ steps.find-bundle.outputs.bundle_dir }}
 
       - name: Copy wrapper script into bundle
-        run: cp linux/packaging/plezy.sh ${{ steps.find-bundle.outputs.bundle_dir }}/plezy.sh
+        run: cp linux/packaging/encorr.sh ${{ steps.find-bundle.outputs.bundle_dir }}/encorr.sh
 
       - name: Verify no missing dependencies
         run: |
           cd ${{ steps.find-bundle.outputs.bundle_dir }}
-          MISSING=$(LD_LIBRARY_PATH=lib ldd ./plezy 2>&1 | grep "not found" || true)
+          MISSING=$(LD_LIBRARY_PATH=lib ldd ./encorr 2>&1 | grep "not found" || true)
           if [[ -n "$MISSING" ]]; then
             echo "ERROR: Unresolved dependencies found:" >&2
             echo "$MISSING" >&2
@@ -805,26 +805,26 @@ jobs:
       - name: Create tarball
         run: |
           cd ${{ steps.find-bundle.outputs.bundle_dir }}
-          tar -czf $GITHUB_WORKSPACE/plezy-linux-arm64.tar.gz *
+          tar -czf $GITHUB_WORKSPACE/encorr-linux-arm64.tar.gz *
 
       - name: Attest Linux arm64 artifacts
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            plezy-linux-arm64.tar.gz
-            plezy-linux-arm64.deb
-            plezy-linux-arm64.rpm
-            plezy-linux-arm64.pkg.tar.zst
+            encorr-linux-arm64.tar.gz
+            encorr-linux-arm64.deb
+            encorr-linux-arm64.rpm
+            encorr-linux-arm64.pkg.tar.zst
 
       - name: Upload Linux arm64 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-arm64
           path: |
-            plezy-linux-arm64.tar.gz
-            plezy-linux-arm64.deb
-            plezy-linux-arm64.rpm
-            plezy-linux-arm64.pkg.tar.zst
+            encorr-linux-arm64.tar.gz
+            encorr-linux-arm64.deb
+            encorr-linux-arm64.rpm
+            encorr-linux-arm64.pkg.tar.zst
 
   create-release:
     needs: [build-android, build-ios, build-macos, build-windows-x64, build-windows-arm64, package-windows, build-linux-x64, build-linux-arm64]
@@ -934,18 +934,18 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
             <channel>
-              <title>Plezy Updates</title>
+              <title>Encorr Updates</title>
               <item>
                 <title>Version ${VERSION}</title>
                 <sparkle:version>${BUILD_NUMBER}</sparkle:version>
                 <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
-                <sparkle:releaseNotesLink>https://gh-html.edde746.dev/edde746/plezy/${VERSION}</sparkle:releaseNotesLink>
+                <sparkle:releaseNotesLink>https://gh-html.edde746.dev/encorr-app/encorr/${VERSION}</sparkle:releaseNotesLink>
           XMLEOF
 
           # macOS enclosure
           if [ -n "$MACOS_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="https://github.com/edde746/plezy/releases/download/${VERSION}/plezy-macos.dmg"
+                <enclosure url="https://github.com/encorr-app/encorr/releases/download/${VERSION}/encorr-macos.dmg"
                            length="${MACOS_DMG_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${MACOS_ED_SIG}"
                            sparkle:os="macos" />
@@ -955,7 +955,7 @@ jobs:
           # Windows enclosure
           if [ -n "$WIN_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="https://github.com/edde746/plezy/releases/download/${VERSION}/plezy-windows-installer.exe"
+                <enclosure url="https://github.com/encorr-app/encorr/releases/download/${VERSION}/encorr-windows-installer.exe"
                            length="${WIN_INSTALLER_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${WIN_ED_SIG}"
                            sparkle:installerArguments="/SILENT /SP-"
@@ -981,20 +981,20 @@ jobs:
           {
             echo 'files<<EOF'
             if [ "${{ inputs.build_android }}" = "true" ]; then
-              echo artifacts/android-apk/plezy-android-arm64-v8a.tar.gz
-              echo artifacts/android-apk/plezy-android-armeabi-v7a.tar.gz
-              echo artifacts/android-apk/plezy-android-x86_64.tar.gz
+              echo artifacts/android-apk/encorr-android-arm64-v8a.tar.gz
+              echo artifacts/android-apk/encorr-android-armeabi-v7a.tar.gz
+              echo artifacts/android-apk/encorr-android-x86_64.tar.gz
             fi
             if [ "${{ inputs.build_ios }}" = "true" ]; then
-              echo artifacts/ios-ipa/plezy-ios.ipa
+              echo artifacts/ios-ipa/encorr-ios.ipa
             fi
             if [ "${{ inputs.build_macos }}" = "true" ]; then
-              echo artifacts/macos-dmg/plezy-macos.dmg
+              echo artifacts/macos-dmg/encorr-macos.dmg
             fi
             if [ "${{ inputs.build_windows }}" = "true" ]; then
-              echo artifacts/windows-x64-portable/plezy-windows-x64-portable.7z
-              echo artifacts/windows-arm64-portable/plezy-windows-arm64-portable.7z
-              echo artifacts/windows-installer/plezy-windows-installer.exe
+              echo artifacts/windows-x64-portable/encorr-windows-x64-portable.7z
+              echo artifacts/windows-arm64-portable/encorr-windows-arm64-portable.7z
+              echo artifacts/windows-installer/encorr-windows-installer.exe
             fi
             if [ "${{ inputs.build_linux }}" = "true" ]; then
               echo 'artifacts/linux-x64/*'

@@ -19,7 +19,7 @@ import 'trakt_constants.dart';
 import 'trakt_session.dart';
 import 'trakt_sync_queue.dart';
 
-/// One-way push of watched/unwatched events from Plezy to Trakt.
+/// One-way push of watched/unwatched events from Encorr to Trakt.
 ///
 /// Subscribes to `WatchStateNotifier` and filters to `{watched, unwatched}`
 /// events on movies/episodes, expanding show/season events to their episodes.

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/ids.dart';
-import 'package:plezy/watch_together/models/watch_session.dart';
-import 'package:plezy/watch_together/providers/watch_together_provider.dart';
+import 'package:encorr/media/ids.dart';
+import 'package:encorr/watch_together/models/watch_session.dart';
+import 'package:encorr/watch_together/providers/watch_together_provider.dart';
 
 import '../test_helpers/prefs.dart';
 

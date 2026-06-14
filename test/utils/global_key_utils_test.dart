@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/ids.dart';
-import 'package:plezy/utils/global_key_utils.dart';
+import 'package:encorr/media/ids.dart';
+import 'package:encorr/utils/global_key_utils.dart';
 
 void main() {
   group('buildGlobalKey', () {

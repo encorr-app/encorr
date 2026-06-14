@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/database/download_operations.dart';
-import 'package:plezy/models/download_models.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/database/download_operations.dart';
+import 'package:encorr/models/download_models.dart';
 
 void main() {
   late AppDatabase db;

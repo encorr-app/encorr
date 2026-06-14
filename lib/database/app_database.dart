@@ -667,7 +667,7 @@ LazyDatabase _openConnection() {
         ? await getApplicationDocumentsDirectory()
         : await getApplicationSupportDirectory();
 
-    final file = File(p.join(dbFolder.path, 'plezy_downloads.db'));
+    final file = File(p.join(dbFolder.path, 'encorr_downloads.db'));
 
     if (!await file.parent.exists()) {
       await file.parent.create(recursive: true);
@@ -712,7 +712,9 @@ Future<void> migrateLegacyDesktopDatabase({
       oldFile = sourceOverride;
     } else {
       final oldFolder = await getApplicationDocumentsDirectory();
-      oldFile = File(p.join(oldFolder.path, 'plezy_downloads.db'));
+      final encorrLegacy = File(p.join(oldFolder.path, 'encorr_downloads.db'));
+      final plezyLegacy = File(p.join(oldFolder.path, 'plezy_downloads.db'));
+      oldFile = await encorrLegacy.exists() ? encorrLegacy : plezyLegacy;
     }
     if (!await oldFile.exists()) return;
   } catch (e, st) {

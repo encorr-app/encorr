@@ -494,7 +494,7 @@ func TestOAuthDoneRendersSuccessPage(t *testing.T) {
 		t.Fatalf("status=%d", resp.StatusCode)
 	}
 	body, _ := io.ReadAll(resp.Body)
-	if !strings.Contains(string(body), "Signed in to Plezy") {
+	if !strings.Contains(string(body), "Signed in to Encorr") {
 		t.Errorf("body missing success message: %s", body)
 	}
 }

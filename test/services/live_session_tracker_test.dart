@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/playback_report_metadata.dart';
-import 'package:plezy/services/jellyfin_client.dart';
-import 'package:plezy/services/live_session_tracker.dart';
+import 'package:encorr/media/playback_report_metadata.dart';
+import 'package:encorr/services/jellyfin_client.dart';
+import 'package:encorr/services/live_session_tracker.dart';
 
 class _FakeJellyfinClient implements JellyfinClient {
   final calls = <String>[];

@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/models/media_subscription.dart';
-import 'package:plezy/models/plex/plex_config.dart';
-import 'package:plezy/services/plex_api_cache.dart';
-import 'package:plezy/services/plex_client.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/models/media_subscription.dart';
+import 'package:encorr/models/plex/plex_config.dart';
+import 'package:encorr/services/plex_api_cache.dart';
+import 'package:encorr/services/plex_client.dart';
 
 void main() {
   late AppDatabase db;
@@ -36,7 +36,7 @@ void main() {
         baseUrl: 'https://plex.example.com',
         token: token,
         clientIdentifier: clientIdentifier,
-        product: 'Plezy',
+        product: 'Encorr',
         version: '1',
         machineIdentifier: 'machine-1',
       ),

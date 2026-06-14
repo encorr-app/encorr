@@ -1,8 +1,8 @@
 #!/bin/bash
 # Ensure binaries are executable
-chmod +x /usr/bin/plezy
-chmod +x /opt/plezy/plezy
-chmod +x /opt/plezy/lib/crashpad_handler
+chmod +x /usr/bin/encorr
+chmod +x /opt/encorr/encorr
+chmod +x /opt/encorr/lib/crashpad_handler
 
 # Update icon cache
 if command -v gtk-update-icon-cache &> /dev/null; then

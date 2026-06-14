@@ -20,7 +20,7 @@
     <div class="hero-copy">
       <div class="brand-row fade-in" style="animation-delay: 0ms;">
         <span class="brand-logo"><Logo /></span>
-        <span class="brand-name">Plezy</span>
+        <span class="brand-name">Encorr</span>
       </div>
 
       <h1
@@ -61,7 +61,7 @@
         <div class="main-phone">
           <enhanced:img
             src={homeImage}
-            alt="Plezy home screen"
+            alt="Encorr home screen"
             class="phone-image"
             fetchpriority="high"
             sizes="(min-width: 768px) 300px, (min-width: 640px) 280px, 224px"

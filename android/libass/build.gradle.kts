@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-  namespace = "com.edde746.plezy.libass"
+  namespace = "app.encorr.encorr.libass"
   compileSdk = 36
   // Matches flutter.ndkVersion so only one NDK is provisioned. This module's
   // CMake build (-DANDROID_STL=c++_shared) contributes NDK 28.2's

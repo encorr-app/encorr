@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/media_part.dart';
-import 'package:plezy/media/media_version.dart';
-import 'package:plezy/services/plex_mappers.dart';
+import 'package:encorr/media/media_part.dart';
+import 'package:encorr/media/media_version.dart';
+import 'package:encorr/services/plex_mappers.dart';
 
 Map<String, dynamic> _media({
   int id = 1,

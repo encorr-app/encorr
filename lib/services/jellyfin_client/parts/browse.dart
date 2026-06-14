@@ -267,7 +267,7 @@ mixin _JellyfinBrowseMethods on MediaServerCacheMixin {
 
   /// Jellyfin has no `/sorts` listing endpoint, so this returns a hardcoded
   /// list based on the broad sort set Streamyfin exposes. Keys remain
-  /// backend-neutral where Plezy already had saved preferences (`rating`,
+  /// backend-neutral where Encorr already had saved preferences (`rating`,
   /// `lastViewedAt`, …); [JellyfinLibraryQueryTranslator] maps them to
   /// Jellyfin's `SortBy`/`SortOrder` at request time.
   @override
@@ -1391,7 +1391,7 @@ mixin _JellyfinBrowseMethods on MediaServerCacheMixin {
   }
 
   /// Jellyfin exposes local trailers separately from special features. Combine
-  /// both into Plezy's existing extras row, but keep remote/YouTube trailers
+  /// both into Encorr's existing extras row, but keep remote/YouTube trailers
   /// out of scope because they are external URLs, not playable Jellyfin items.
   @override
   Future<List<MediaItem>> fetchExtras(String id) async {

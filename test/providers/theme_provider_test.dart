@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:plezy/providers/theme_provider.dart';
-import 'package:plezy/services/base_shared_preferences_service.dart';
-import 'package:plezy/services/settings_service.dart' as settings;
+import 'package:encorr/providers/theme_provider.dart';
+import 'package:encorr/services/base_shared_preferences_service.dart';
+import 'package:encorr/services/settings_service.dart' as settings;
 
 import '../test_helpers/prefs.dart';
 

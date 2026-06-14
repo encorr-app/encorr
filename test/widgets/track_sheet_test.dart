@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/i18n/strings.g.dart';
-import 'package:plezy/media/media_source_info.dart';
-import 'package:plezy/mpv/mpv.dart';
-import 'package:plezy/theme/mono_tokens.dart';
-import 'package:plezy/widgets/video_controls/models/track_controls_state.dart';
-import 'package:plezy/widgets/video_controls/sheets/track_sheet.dart';
+import 'package:encorr/i18n/strings.g.dart';
+import 'package:encorr/media/media_source_info.dart';
+import 'package:encorr/mpv/mpv.dart';
+import 'package:encorr/theme/mono_tokens.dart';
+import 'package:encorr/widgets/video_controls/models/track_controls_state.dart';
+import 'package:encorr/widgets/video_controls/sheets/track_sheet.dart';
 
 const _testTokens = MonoTokens(
   radiusSm: 8,

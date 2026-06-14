@@ -16,6 +16,7 @@ import '../utils/formatters.dart';
 import '../utils/layout_constants.dart';
 import '../utils/media_image_helper.dart';
 import 'app_icon.dart';
+import 'encorr/encorr_gradient_button.dart';
 import 'fitting_title_text.dart';
 import 'media_rating_badge.dart';
 import 'optimized_media_image.dart' show blurArtwork;
@@ -396,22 +397,20 @@ class TvSpotlightBackground extends StatelessWidget {
         ? ((media.durationMs! - media.viewOffsetMs!) / 60_000).round()
         : 0;
 
-    return GestureDetector(
+    return EncorrGradientButton(
       onTap: onPrimaryAction,
-      child: Container(
-        padding: .symmetric(horizontal: (compact ? 24 : 30) * scale, vertical: (compact ? 12 : 15) * scale),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(32 * scale)),
-        child: Row(
-          mainAxisSize: .min,
-          children: [
-            AppIcon(Symbols.play_arrow_rounded, fill: 1, size: (compact ? 24 : 28) * scale, color: Colors.black),
-            SizedBox(width: (compact ? 10 : 12) * scale),
-            Text(
-              hasProgress ? t.discover.minutesLeft(minutes: minutesLeft) : t.common.play,
-              style: TextStyle(color: Colors.black, fontSize: (compact ? 16 : 18) * scale, fontWeight: .w800),
-            ),
-          ],
-        ),
+      padding: EdgeInsets.symmetric(horizontal: (compact ? 24 : 30) * scale, vertical: (compact ? 12 : 15) * scale),
+      borderRadius: BorderRadius.circular(32 * scale),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppIcon(Symbols.play_arrow_rounded, fill: 1, size: (compact ? 24 : 28) * scale, color: Colors.white),
+          SizedBox(width: (compact ? 10 : 12) * scale),
+          Text(
+            hasProgress ? t.discover.minutesLeft(minutes: minutesLeft) : t.common.play,
+            style: TextStyle(color: Colors.white, fontSize: (compact ? 16 : 18) * scale, fontWeight: FontWeight.w800),
+          ),
+        ],
       ),
     );
   }

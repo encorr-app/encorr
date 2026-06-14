@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/ids.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_part.dart';
-import 'package:plezy/media/media_stream.dart';
-import 'package:plezy/media/media_version.dart';
-import 'package:plezy/services/jellyfin_mappers.dart';
-import 'package:plezy/services/plex_mappers.dart';
-import 'package:plezy/utils/media_quality_labels.dart';
+import 'package:encorr/media/ids.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_part.dart';
+import 'package:encorr/media/media_stream.dart';
+import 'package:encorr/media/media_version.dart';
+import 'package:encorr/services/jellyfin_mappers.dart';
+import 'package:encorr/services/plex_mappers.dart';
+import 'package:encorr/utils/media_quality_labels.dart';
 
 void main() {
   group('buildMediaQualityLabels', () {

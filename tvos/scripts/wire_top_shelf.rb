@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Adds Plezy's tvOS Top Shelf extension target and Runner-side bridge source.
+# Adds Encorr's tvOS Top Shelf extension target and Runner-side bridge source.
 
 require 'xcodeproj'
 
@@ -142,7 +142,7 @@ extension_target.build_configurations.each do |config|
     '@executable_path/../../Frameworks',
   ]
   settings['MARKETING_VERSION'] = '$(FLUTTER_BUILD_NAME)'
-  settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.edde746.plezy.TopShelfExtension'
+  settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'app.encorr.encorr.TopShelfExtension'
   settings['PRODUCT_NAME'] = '$(TARGET_NAME)'
   settings['SDKROOT'] = 'appletvos'
   settings['SKIP_INSTALL'] = 'YES'
