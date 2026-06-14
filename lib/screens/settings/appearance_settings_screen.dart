@@ -43,7 +43,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
             subtitle: t.settings.tvFullCardLayoutDescription,
           ),
         if (Platform.isAndroid) _visualEffectsSelector(context),
-        // Plezy-Seerr fork: glass chrome toggle (plain literals, not in slang i18n).
+        // Encorr fork: glass chrome toggle (plain literals, not in slang i18n).
         const SettingSwitchTile(
           pref: SettingsService.glassEffects,
           icon: Symbols.blur_on_rounded,

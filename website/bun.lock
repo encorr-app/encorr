@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "plezy-site",
+      "name": "encorr-site",
       "dependencies": {
         "@sveltejs/adapter-static": "^3.0.10",
       },

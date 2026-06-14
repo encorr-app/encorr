@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/utils/log_redaction_manager.dart';
+import 'package:encorr/utils/log_redaction_manager.dart';
 
 void main() {
   // The manager holds static state; clear between tests so they don't bleed.
@@ -68,12 +68,12 @@ void main() {
 
     test('redacts MediaBrowser Authorization Token segment', () {
       final input =
-          'Authorization: MediaBrowser Client="Plezy", Device="Plezy", DeviceId="dev-1", Version="1.0", Token="opaque-jellyfin-token"';
+          'Authorization: MediaBrowser Client="Encorr", Device="Encorr", DeviceId="dev-1", Version="1.0", Token="opaque-jellyfin-token"';
       final result = LogRedactionManager.redact(input);
       expect(result.contains('opaque-jellyfin-token'), isFalse);
       expect(result.contains('Token="[REDACTED]"'), isTrue);
       // Surrounding metadata stays intact for debugging.
-      expect(result.contains('Client="Plezy"'), isTrue);
+      expect(result.contains('Client="Encorr"'), isTrue);
     });
 
     test('masks IPv4 addresses with dots', () {

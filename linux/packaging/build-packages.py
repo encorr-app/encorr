@@ -14,11 +14,11 @@ ARCH_SUFFIX = os.environ.get("ARCH_SUFFIX", "x64")
 
 # Package metadata
 METADATA = {
-    "name": "plezy",
+    "name": "encorr",
     "license": "GPL-3.0",
     "vendor": "edde746",
     "maintainer": "edde746 <noreply@github.com>",
-    "url": "https://github.com/edde746/plezy",
+    "url": "https://github.com/encorr-app/encorr",
     "description": "A modern Plex and Jellyfin client for desktop and mobile",
 }
 
@@ -91,12 +91,12 @@ def get_version() -> str:
 def generate_icons():
     """Generate icons at multiple sizes using ImageMagick."""
     print("Generating icons...")
-    source = PROJECT_ROOT / "assets/plezy.png"
+    source = PROJECT_ROOT / "assets/encorr_logo.png"
 
     for size in ICON_SIZES:
         dest_dir = SCRIPT_DIR / f"icons/{size}x{size}"
         dest_dir.mkdir(parents=True, exist_ok=True)
-        dest = dest_dir / "plezy.png"
+        dest = dest_dir / "encorr.png"
 
         # Try magick (ImageMagick 7) first, then convert (ImageMagick 6)
         for cmd in ["magick", "convert"]:
@@ -111,14 +111,14 @@ def generate_icons():
 def get_file_mappings() -> list[str]:
     """Get file mappings for fpm."""
     mappings = [
-        f"{BUILD_DIR}/=/opt/plezy/",
-        f"{SCRIPT_DIR}/com.edde746.plezy.desktop=/usr/share/applications/com.edde746.plezy.desktop",
-        f"{SCRIPT_DIR}/plezy.sh=/usr/bin/plezy",
+        f"{BUILD_DIR}/=/opt/encorr/",
+        f"{SCRIPT_DIR}/app.encorr.encorr.desktop=/usr/share/applications/app.encorr.encorr.desktop",
+        f"{SCRIPT_DIR}/encorr.sh=/usr/bin/encorr",
     ]
 
     for size in ICON_SIZES:
         mappings.append(
-            f"{SCRIPT_DIR}/icons/{size}x{size}/plezy.png=/usr/share/icons/hicolor/{size}x{size}/apps/plezy.png"
+            f"{SCRIPT_DIR}/icons/{size}x{size}/encorr.png=/usr/share/icons/hicolor/{size}x{size}/apps/encorr.png"
         )
 
     return mappings
@@ -178,7 +178,7 @@ def main():
     print(f"Building {ARCH_SUFFIX} packages for {METADATA['name']} version {version}")
 
     # Make scripts executable
-    for script in ["plezy.sh", "after-install.sh", "after-remove.sh"]:
+    for script in ["encorr.sh", "after-install.sh", "after-remove.sh"]:
         (SCRIPT_DIR / script).chmod(0o755)
 
     # Generate icons

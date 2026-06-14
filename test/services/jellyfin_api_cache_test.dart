@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/services/credential_vault.dart';
-import 'package:plezy/services/jellyfin_api_cache.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/services/credential_vault.dart';
+import 'package:encorr/services/jellyfin_api_cache.dart';
 
 import '../test_helpers/prefs.dart';
 

@@ -40,7 +40,7 @@ class MainFlutterWindow: NSWindow {
     RegisterGeneratedPlugins(registry: flutterViewController)
 
     // Enable window position/size persistence
-    self.setFrameAutosaveName("com.edde746.plezy.MainWindow")
+    self.setFrameAutosaveName("app.encorr.encorr.MainWindow")
     WindowUtilsPlugin.syncWindowChrome()
 
     super.awakeFromNib()

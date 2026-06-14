@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/mixins/tab_navigation_mixin.dart';
-import 'package:plezy/services/gamepad_service.dart';
+import 'package:encorr/mixins/tab_navigation_mixin.dart';
+import 'package:encorr/services/gamepad_service.dart';
 
 /// Probe widget that mounts the mixin against a real BuildContext + Ticker.
 ///

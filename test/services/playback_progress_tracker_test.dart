@@ -1,20 +1,20 @@
 import 'dart:async';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_source_info.dart';
-import 'package:plezy/media/playback_report_metadata.dart';
-import 'package:plezy/mpv/mpv.dart';
-import 'package:plezy/services/multi_server_manager.dart';
-import 'package:plezy/services/offline_watch_sync_service.dart';
-import 'package:plezy/services/playback_progress_tracker.dart';
-import 'package:plezy/services/plex_client.dart';
-import 'package:plezy/utils/watch_state_notifier.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_source_info.dart';
+import 'package:encorr/media/playback_report_metadata.dart';
+import 'package:encorr/mpv/mpv.dart';
+import 'package:encorr/services/multi_server_manager.dart';
+import 'package:encorr/services/offline_watch_sync_service.dart';
+import 'package:encorr/services/playback_progress_tracker.dart';
+import 'package:encorr/services/plex_client.dart';
+import 'package:encorr/utils/watch_state_notifier.dart';
 
 import '../test_helpers/prefs.dart';
 
@@ -678,7 +678,7 @@ void main() {
     test('backend that marks watched on stop skips the explicit server mark (#1287)', () async {
       // Jellyfin: /Sessions/Playing/Stopped marks the item played server-side,
       // so an explicit markWatched here would double-scrobble via the Trakt
-      // plugin. The local watch event must still fire (UI + Plezy's own Trakt
+      // plugin. The local watch event must still fire (UI + Encorr's own Trakt
       // sync, which key on `watched` events, not progress).
       final client = _StopMarksWatchedClient();
       final player = _FakePlayer(position: const Duration(seconds: 95), duration: const Duration(seconds: 100));

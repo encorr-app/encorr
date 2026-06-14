@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # Usage: upload-symbols.ps1 <platform> [source-root]
 # Env: SENTRY_AUTH_TOKEN or BUGS_ADMIN_TOKEN (required unless BUGS_UPLOAD_DRY_RUN is set)
-#      SENTRY_URL or BUGS_URL (default https://bugs.plezy.app)
+#      SENTRY_URL or BUGS_URL (default https://bugs.encorr.app)
 # Platforms: windows-x64 | windows-arm64
 param(
     [Parameter(Mandatory = $true)]
@@ -64,11 +64,11 @@ if (-not (Has-SymbolFile)) {
 }
 
 if ([string]::IsNullOrEmpty($env:SENTRY_URL)) {
-    $env:SENTRY_URL = if ([string]::IsNullOrEmpty($env:BUGS_URL)) { 'https://bugs.plezy.app' } else { $env:BUGS_URL }
+    $env:SENTRY_URL = if ([string]::IsNullOrEmpty($env:BUGS_URL)) { 'https://bugs.encorr.app' } else { $env:BUGS_URL }
 }
 
 if ([string]::IsNullOrEmpty($env:SENTRY_RELEASE)) {
-    $env:SENTRY_RELEASE = "plezy@$(git rev-parse --short HEAD)"
+    $env:SENTRY_RELEASE = "encorr@$(git rev-parse --short HEAD)"
 }
 
 if ([string]::IsNullOrEmpty($env:SENTRY_LOG_LEVEL)) {

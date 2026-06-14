@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/navigation/navigation_tabs.dart';
+import 'package:encorr/navigation/navigation_tabs.dart';
 
 void main() {
   group('NavigationTab.resolveDefaultTab', () {
@@ -33,6 +33,16 @@ void main() {
         NavigationTab.resolveDefaultTab(isOffline: false, hasLiveTv: false, preferredStartup: NavigationTabId.liveTv),
         NavigationTabId.discover,
       );
+    });
+
+    test('online includes Requests when online', () {
+      final tabs = NavigationTab.getVisibleTabs(isOffline: false, hasLiveTv: false);
+      expect(tabs.any((t) => t.id == NavigationTabId.requests), isTrue);
+    });
+
+    test('offline hides Requests', () {
+      final tabs = NavigationTab.getVisibleTabs(isOffline: true, hasLiveTv: false);
+      expect(tabs.any((t) => t.id == NavigationTabId.requests), isFalse);
     });
 
     test('online defaults to Home when no preference is set', () {

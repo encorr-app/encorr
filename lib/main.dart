@@ -133,10 +133,10 @@ Future<void> main() async {
     final packageInfo = await PackageInfo.fromPlatform();
 
     await SentryFlutter.init((options) {
-      options.dsn = 'https://6a1a6ef8c72140099b2798973c1bfb2f@bugs.plezy.app/1';
+      options.dsn = 'https://6a1a6ef8c72140099b2798973c1bfb2f@bugs.encorr.app/1';
       options.release = gitCommit.isNotEmpty
-          ? 'plezy@${gitCommit.substring(0, 7)}'
-          : 'plezy@${packageInfo.version}+${packageInfo.buildNumber}';
+          ? 'encorr@${gitCommit.substring(0, 7)}'
+          : 'encorr@${packageInfo.version}+${packageInfo.buildNumber}';
       if (_sentryEnvironment.isNotEmpty) options.environment = _sentryEnvironment;
       if (_sentryDist.isNotEmpty) options.dist = _sentryDist;
       options.tracesSampleRate = 0;
@@ -222,10 +222,10 @@ Future<void> _bootstrapApp() async {
   final commitSuffix = gitCommit.isNotEmpty ? ' (${gitCommit.substring(0, 7)})' : '';
   String renderer = '';
   if (Platform.isAndroid) {
-    renderer = ' [${await const MethodChannel('com.plezy/theme').invokeMethod<String>('getRenderer')}]';
+    renderer = ' [${await const MethodChannel('com.encorr/theme').invokeMethod<String>('getRenderer')}]';
   }
   appLogger.i(
-    'Plezy v${packageInfo.version}+${packageInfo.buildNumber}$commitSuffix$renderer'
+    'Encorr v${packageInfo.version}+${packageInfo.buildNumber}$commitSuffix$renderer'
     ' [effects: ${DevicePerformance.describeSync()}]',
   );
 
@@ -1552,7 +1552,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          Center(child: SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 288, height: 288)),
+          Center(child: Image.asset('assets/encorr_logo.png', width: 288, height: 288, fit: BoxFit.contain)),
           Positioned(
             left: 0,
             right: 0,

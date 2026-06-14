@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 	try {
 		const gplay = await import('google-play-scraper');
-		const app = await gplay.default.app({ appId: 'com.edde746.plezy' });
+		const app = await gplay.default.app({ appId: 'app.encorr.encorr' });
 		if (app.score && app.ratings) {
 			playStoreRating = {
 				score: app.score,

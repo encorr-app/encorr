@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/services/settings_service.dart' show LibraryDensity;
-import 'package:plezy/utils/grid_size_calculator.dart';
-import 'package:plezy/utils/layout_constants.dart';
+import 'package:encorr/services/settings_service.dart' show LibraryDensity;
+import 'package:encorr/utils/grid_size_calculator.dart';
+import 'package:encorr/utils/layout_constants.dart';
 
 /// Column count the stock [SliverGridDelegateWithMaxCrossAxisExtent] renders for
 /// [crossAxisExtent]. This is the source of truth that the navigation column

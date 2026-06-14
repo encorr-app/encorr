@@ -94,7 +94,7 @@ class _TranslationsAppSv extends TranslationsAppEn {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Plezy';
+	@override String get title => 'Encorr';
 }
 
 // Path: auth
@@ -215,7 +215,7 @@ class _TranslationsSettingsSv extends TranslationsSettingsEn {
 
 	// Translations
 	@override String get title => 'Inställningar';
-	@override String get supportDeveloper => 'Stöd Plezy';
+	@override String get supportDeveloper => 'Stöd Encorr';
 	@override String get supportDeveloperDescription => 'Donera via Liberapay för att finansiera utvecklingen';
 	@override String get language => 'Språk';
 	@override String get theme => 'Tema';
@@ -320,7 +320,7 @@ class _TranslationsSettingsSv extends TranslationsSettingsEn {
 	@override String get importSettingsConfirm => 'Detta ersätter dina nuvarande inställningar. Fortsätta?';
 	@override String get importSettingsSuccess => 'Inställningar importerade';
 	@override String get importSettingsFailed => 'Kunde inte importera inställningar';
-	@override String get importSettingsInvalidFile => 'Denna fil är inte en giltig Plezy-export';
+	@override String get importSettingsInvalidFile => 'Denna fil är inte en giltig Encorr-export';
 	@override String get importSettingsNoUser => 'Logga in innan du importerar inställningar';
 	@override String get shortcutsReset => 'Genvägar återställda till standard';
 	@override String get about => 'Om';
@@ -401,7 +401,7 @@ class _TranslationsSettingsSv extends TranslationsSettingsEn {
 	@override String get forceTvMode => 'Tvinga TV-läge';
 	@override String get forceTvModeDescription => 'Tvinga TV-layout. För enheter som inte upptäcks automatiskt. Kräver omstart.';
 	@override String get startInFullscreen => 'Starta i helskärm';
-	@override String get startInFullscreenDescription => 'Öppna Plezy i helskärm vid start';
+	@override String get startInFullscreenDescription => 'Öppna Encorr i helskärm vid start';
 	@override String get exitFullscreenOnPlayerClose => 'Avsluta helskärm vid stängning av spelare';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Avslutar automatiskt helskärmsläge när videospelaren stängs';
 	@override String get autoHidePerformanceOverlay => 'Dölj prestandaöverlagring automatiskt';
@@ -409,7 +409,7 @@ class _TranslationsSettingsSv extends TranslationsSettingsEn {
 	@override String get showNavBarLabels => 'Visa navigeringsfältets etiketter';
 	@override String get showNavBarLabelsDescription => 'Visa textetiketter under navigeringsfältets ikoner';
 	@override String get startupSection => 'Startsektion';
-	@override String get startupSectionDescription => 'Välj vilken sektion Plezy öppnar vid start';
+	@override String get startupSectionDescription => 'Välj vilken sektion Encorr öppnar vid start';
 	@override String get liveTvDefaultFavorites => 'Standard till favoritkanaler';
 	@override String get liveTvDefaultFavoritesDescription => 'Visa bara favoritkanaler när du öppnar Live TV';
 	@override String get display => 'Skärm';
@@ -770,7 +770,7 @@ class _TranslationsProfilesSv extends TranslationsProfilesEn {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Lägg till Plezy-profil';
+	@override String get addEncorrProfile => 'Lägg till Encorr-profil';
 	@override String get switchingProfile => 'Byter profil…';
 	@override String get deleteThisProfileTitle => 'Ta bort denna profil?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Ta bort ${displayName}. Anslutningar påverkas inte.';
@@ -845,7 +845,7 @@ class _TranslationsConnectionsSv extends TranslationsConnectionsEn {
 	@override String sessionExpiredMany({required Object count}) => 'Sessionen har gått ut för ${count} servrar';
 	@override String get signInAgain => 'Logga in igen';
 	@override String get editJellyfinTitle => 'Redigera Jellyfin-anslutning';
-	@override String editJellyfinIntro({required Object serverName}) => 'Lägg till eller ta bort URL:er för ${serverName}. Plezy använder den nåbara URL:en med lägst latens.';
+	@override String editJellyfinIntro({required Object serverName}) => 'Lägg till eller ta bort URL:er för ${serverName}. Encorr använder den nåbara URL:en med lägst latens.';
 }
 
 // Path: discover
@@ -1562,11 +1562,11 @@ class _TranslationsTraktSv extends TranslationsTraktEn {
 	@override String get connected => 'Ansluten';
 	@override String connectedAs({required Object username}) => 'Ansluten som @${username}';
 	@override String get disconnectConfirm => 'Koppla från Trakt-konto?';
-	@override String get disconnectConfirmBody => 'Plezy slutar skicka händelser till Trakt. Du kan återansluta när som helst.';
+	@override String get disconnectConfirmBody => 'Encorr slutar skicka händelser till Trakt. Du kan återansluta när som helst.';
 	@override String get scrobble => 'Realtids-scrobbling';
 	@override String get scrobbleDescription => 'Skicka uppspelnings-, paus- och stopphändelser till Trakt under uppspelning.';
 	@override String get watchedSync => 'Synkronisera tittad-status';
-	@override String get watchedSyncDescription => 'När du markerar något som tittat i Plezy markeras det också på Trakt.';
+	@override String get watchedSyncDescription => 'När du markerar något som tittat i Encorr markeras det också på Trakt.';
 }
 
 // Path: trackers
@@ -1583,7 +1583,7 @@ class _TranslationsTrackersSv extends TranslationsTrackersEn {
 	@override String get scrobble => 'Spåra framsteg automatiskt';
 	@override String get scrobbleDescription => 'Uppdaterar din lista när du är klar med ett avsnitt eller en film.';
 	@override String disconnectConfirm({required Object service}) => 'Koppla från ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'Plezy slutar uppdatera ${service}. Återanslut när som helst.';
+	@override String disconnectConfirmBody({required Object service}) => 'Encorr slutar uppdatera ${service}. Återanslut när som helst.';
 	@override String connectFailed({required Object service}) => 'Kunde inte ansluta till ${service}. Försök igen.';
 	@override late final _TranslationsTrackersServicesSv services = _TranslationsTrackersServicesSv._(_root);
 	@override late final _TranslationsTrackersDeviceCodeSv deviceCode = _TranslationsTrackersDeviceCodeSv._(_root);
@@ -1779,19 +1779,19 @@ class _TranslationsCompanionRemotePairingSv extends TranslationsCompanionRemoteP
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Plezy-enheter med samma Plex-konto visas här';
+	@override String get discoveryDescription => 'Encorr-enheter med samma Plex-konto visas här';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Ansluter...';
 	@override String get searchingForDevices => 'Söker efter enheter...';
 	@override String get noDevicesFound => 'Inga enheter hittades i ditt nätverk';
-	@override String get noDevicesHint => 'Öppna Plezy på desktop och använd samma WiFi';
+	@override String get noDevicesHint => 'Öppna Encorr på desktop och använd samma WiFi';
 	@override String get availableDevices => 'Tillgängliga enheter';
 	@override String get manualConnection => 'Manuell anslutning';
 	@override String get cryptoInitFailed => 'Kunde inte starta säker anslutning. Logga in på Plex först.';
 	@override String get validationHostRequired => 'Ange värdadress';
 	@override String get validationHostFormat => 'Format måste vara IP:port (t.ex. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Anslutningen tog för lång tid. Använd samma nätverk på båda enheter.';
-	@override String get sessionNotFound => 'Enhet hittades inte. Kontrollera att Plezy körs på värden.';
+	@override String get sessionNotFound => 'Enhet hittades inte. Kontrollera att Encorr körs på värden.';
 	@override String get authFailed => 'Autentisering misslyckades. Båda enheter behöver samma Plex-konto.';
 	@override String failedToConnect({required Object error}) => 'Kunde inte ansluta: ${error}';
 }
@@ -1866,7 +1866,7 @@ class _TranslationsTrackersDeviceCodeSv extends TranslationsTrackersDeviceCodeEn
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Aktivera Plezy på ${service}';
+	@override String title({required Object service}) => 'Aktivera Encorr på ${service}';
 	@override String body({required Object url}) => 'Besök ${url} och ange den här koden:';
 	@override String openToActivate({required Object service}) => 'Öppna ${service} för att aktivera';
 	@override String get waitingForAuthorization => 'Väntar på auktorisering…';
@@ -1915,7 +1915,7 @@ class _TranslationsTrackersLibraryFilterSv extends TranslationsTrackersLibraryFi
 extension on TranslationsSv {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'Plezy',
+			'app.title' => 'Encorr',
 			'auth.signIn' => 'Logga in',
 			'auth.signInWithPlex' => 'Logga in med Plex',
 			'auth.showQRCode' => 'Visa QR-kod',
@@ -1991,7 +1991,7 @@ extension on TranslationsSv {
 			'update.latestVersion' => 'Du har den senaste versionen',
 			'update.checkFailed' => 'Misslyckades att kontrollera uppdateringar',
 			'settings.title' => 'Inställningar',
-			'settings.supportDeveloper' => 'Stöd Plezy',
+			'settings.supportDeveloper' => 'Stöd Encorr',
 			'settings.supportDeveloperDescription' => 'Donera via Liberapay för att finansiera utvecklingen',
 			'settings.language' => 'Språk',
 			'settings.theme' => 'Tema',
@@ -2096,7 +2096,7 @@ extension on TranslationsSv {
 			'settings.importSettingsConfirm' => 'Detta ersätter dina nuvarande inställningar. Fortsätta?',
 			'settings.importSettingsSuccess' => 'Inställningar importerade',
 			'settings.importSettingsFailed' => 'Kunde inte importera inställningar',
-			'settings.importSettingsInvalidFile' => 'Denna fil är inte en giltig Plezy-export',
+			'settings.importSettingsInvalidFile' => 'Denna fil är inte en giltig Encorr-export',
 			'settings.importSettingsNoUser' => 'Logga in innan du importerar inställningar',
 			'settings.shortcutsReset' => 'Genvägar återställda till standard',
 			'settings.about' => 'Om',
@@ -2177,7 +2177,7 @@ extension on TranslationsSv {
 			'settings.forceTvMode' => 'Tvinga TV-läge',
 			'settings.forceTvModeDescription' => 'Tvinga TV-layout. För enheter som inte upptäcks automatiskt. Kräver omstart.',
 			'settings.startInFullscreen' => 'Starta i helskärm',
-			'settings.startInFullscreenDescription' => 'Öppna Plezy i helskärm vid start',
+			'settings.startInFullscreenDescription' => 'Öppna Encorr i helskärm vid start',
 			'settings.exitFullscreenOnPlayerClose' => 'Avsluta helskärm vid stängning av spelare',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Avslutar automatiskt helskärmsläge när videospelaren stängs',
 			'settings.autoHidePerformanceOverlay' => 'Dölj prestandaöverlagring automatiskt',
@@ -2185,7 +2185,7 @@ extension on TranslationsSv {
 			'settings.showNavBarLabels' => 'Visa navigeringsfältets etiketter',
 			'settings.showNavBarLabelsDescription' => 'Visa textetiketter under navigeringsfältets ikoner',
 			'settings.startupSection' => 'Startsektion',
-			'settings.startupSectionDescription' => 'Välj vilken sektion Plezy öppnar vid start',
+			'settings.startupSectionDescription' => 'Välj vilken sektion Encorr öppnar vid start',
 			'settings.liveTvDefaultFavorites' => 'Standard till favoritkanaler',
 			'settings.liveTvDefaultFavoritesDescription' => 'Visa bara favoritkanaler när du öppnar Live TV',
 			'settings.display' => 'Skärm',
@@ -2452,7 +2452,7 @@ extension on TranslationsSv {
 			'mpvConfig.confirmDeletePreset' => 'Är du säker på att du vill ta bort detta förval?',
 			'mpvConfig.configPlaceholder' => 'gpu-api=vulkan\nhwdec=auto\n# comment',
 			'dialog.confirmAction' => 'Bekräfta åtgärd',
-			'profiles.addPlezyProfile' => 'Lägg till Plezy-profil',
+			'profiles.addEncorrProfile' => 'Lägg till Encorr-profil',
 			'profiles.switchingProfile' => 'Byter profil…',
 			'profiles.deleteThisProfileTitle' => 'Ta bort denna profil?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Ta bort ${displayName}. Anslutningar påverkas inte.',
@@ -2518,7 +2518,7 @@ extension on TranslationsSv {
 			'connections.sessionExpiredMany' => ({required Object count}) => 'Sessionen har gått ut för ${count} servrar',
 			'connections.signInAgain' => 'Logga in igen',
 			'connections.editJellyfinTitle' => 'Redigera Jellyfin-anslutning',
-			'connections.editJellyfinIntro' => ({required Object serverName}) => 'Lägg till eller ta bort URL:er för ${serverName}. Plezy använder den nåbara URL:en med lägst latens.',
+			'connections.editJellyfinIntro' => ({required Object serverName}) => 'Lägg till eller ta bort URL:er för ${serverName}. Encorr använder den nåbara URL:en med lägst latens.',
 			'discover.title' => 'Upptäck',
 			'discover.switchProfile' => 'Byt profil',
 			'discover.noContentAvailable' => 'Inget innehåll tillgängligt',
@@ -2915,19 +2915,19 @@ extension on TranslationsSv {
 			'companionRemote.session.startServer' => 'Starta server',
 			'companionRemote.session.stopServer' => 'Stoppa server',
 			'companionRemote.session.minimize' => 'Minimera',
-			'companionRemote.pairing.discoveryDescription' => 'Plezy-enheter med samma Plex-konto visas här',
+			'companionRemote.pairing.discoveryDescription' => 'Encorr-enheter med samma Plex-konto visas här',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Ansluter...',
 			'companionRemote.pairing.searchingForDevices' => 'Söker efter enheter...',
 			'companionRemote.pairing.noDevicesFound' => 'Inga enheter hittades i ditt nätverk',
-			'companionRemote.pairing.noDevicesHint' => 'Öppna Plezy på desktop och använd samma WiFi',
+			'companionRemote.pairing.noDevicesHint' => 'Öppna Encorr på desktop och använd samma WiFi',
 			'companionRemote.pairing.availableDevices' => 'Tillgängliga enheter',
 			'companionRemote.pairing.manualConnection' => 'Manuell anslutning',
 			'companionRemote.pairing.cryptoInitFailed' => 'Kunde inte starta säker anslutning. Logga in på Plex först.',
 			'companionRemote.pairing.validationHostRequired' => 'Ange värdadress',
 			'companionRemote.pairing.validationHostFormat' => 'Format måste vara IP:port (t.ex. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Anslutningen tog för lång tid. Använd samma nätverk på båda enheter.',
-			'companionRemote.pairing.sessionNotFound' => 'Enhet hittades inte. Kontrollera att Plezy körs på värden.',
+			'companionRemote.pairing.sessionNotFound' => 'Enhet hittades inte. Kontrollera att Encorr körs på värden.',
 			'companionRemote.pairing.authFailed' => 'Autentisering misslyckades. Båda enheter behöver samma Plex-konto.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Kunde inte ansluta: ${error}',
 			'companionRemote.remote.disconnectConfirm' => 'Vill du koppla från fjärrsessionen?',
@@ -3118,11 +3118,11 @@ extension on TranslationsSv {
 			'trakt.connected' => 'Ansluten',
 			'trakt.connectedAs' => ({required Object username}) => 'Ansluten som @${username}',
 			'trakt.disconnectConfirm' => 'Koppla från Trakt-konto?',
-			'trakt.disconnectConfirmBody' => 'Plezy slutar skicka händelser till Trakt. Du kan återansluta när som helst.',
+			'trakt.disconnectConfirmBody' => 'Encorr slutar skicka händelser till Trakt. Du kan återansluta när som helst.',
 			'trakt.scrobble' => 'Realtids-scrobbling',
 			'trakt.scrobbleDescription' => 'Skicka uppspelnings-, paus- och stopphändelser till Trakt under uppspelning.',
 			'trakt.watchedSync' => 'Synkronisera tittad-status',
-			'trakt.watchedSyncDescription' => 'När du markerar något som tittat i Plezy markeras det också på Trakt.',
+			'trakt.watchedSyncDescription' => 'När du markerar något som tittat i Encorr markeras det också på Trakt.',
 			'trackers.title' => 'Spårare',
 			'trackers.hubSubtitle' => 'Synka tittförlopp med Trakt och andra tjänster.',
 			'trackers.notConnected' => 'Ej ansluten',
@@ -3130,12 +3130,12 @@ extension on TranslationsSv {
 			'trackers.scrobble' => 'Spåra framsteg automatiskt',
 			'trackers.scrobbleDescription' => 'Uppdaterar din lista när du är klar med ett avsnitt eller en film.',
 			'trackers.disconnectConfirm' => ({required Object service}) => 'Koppla från ${service}?',
-			'trackers.disconnectConfirmBody' => ({required Object service}) => 'Plezy slutar uppdatera ${service}. Återanslut när som helst.',
+			'trackers.disconnectConfirmBody' => ({required Object service}) => 'Encorr slutar uppdatera ${service}. Återanslut när som helst.',
 			'trackers.connectFailed' => ({required Object service}) => 'Kunde inte ansluta till ${service}. Försök igen.',
 			'trackers.services.mal' => 'MyAnimeList',
 			'trackers.services.anilist' => 'AniList',
 			'trackers.services.simkl' => 'Simkl',
-			'trackers.deviceCode.title' => ({required Object service}) => 'Aktivera Plezy på ${service}',
+			'trackers.deviceCode.title' => ({required Object service}) => 'Aktivera Encorr på ${service}',
 			'trackers.deviceCode.body' => ({required Object url}) => 'Besök ${url} och ange den här koden:',
 			'trackers.deviceCode.openToActivate' => ({required Object service}) => 'Öppna ${service} för att aktivera',
 			'trackers.deviceCode.waitingForAuthorization' => 'Väntar på auktorisering…',

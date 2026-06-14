@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/media/ids.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_stream.dart';
-import 'package:plezy/services/plex_mappers.dart';
+import 'package:encorr/media/ids.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_stream.dart';
+import 'package:encorr/services/plex_mappers.dart';
 
 const _serverId = 'plex-machine-1';
 const _serverName = 'Home';

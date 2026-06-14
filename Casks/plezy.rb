@@ -1,11 +1,11 @@
-cask "plezy" do
+cask "encorr" do
   version "2.6.0"
   sha256 "e408fe84c07e0ff4a2f1a78e8dcfc418233c66ca98c79028a7b099499307a59e"
 
-  url "https://github.com/edde746/plezy/releases/download/#{version}/plezy-macos.dmg"
-  name "Plezy"
+  url "https://github.com/encorr-app/encorr/releases/download/#{version}/encorr-macos.dmg"
+  name "Encorr"
   desc "Modern Plex and Jellyfin client built with Flutter"
-  homepage "https://github.com/edde746/plezy"
+  homepage "https://github.com/encorr-app/encorr"
 
   livecheck do
     url :url
@@ -14,22 +14,22 @@ cask "plezy" do
 
   auto_updates true
 
-  app "Plezy.app"
+  app "Encorr.app"
 
   postflight do
     system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/Plezy.app"],
+                   args: ["-cr", "#{appdir}/Encorr.app"],
                    sudo: false
   end
 
-  uninstall quit: "com.edde746.plezy"
+  uninstall quit: "app.encorr.encorr"
 
   zap trash: [
-    "~/Library/Application Support/com.edde746.plezy",
-    "~/Library/Caches/com.edde746.plezy",
-    "~/Library/HTTPStorages/com.edde746.plezy",
-    "~/Library/Preferences/com.edde746.plezy.plist",
-    "~/Library/Saved Application State/com.edde746.plezy.savedState",
-    "~/Library/WebKit/com.edde746.plezy",
+    "~/Library/Application Support/app.encorr.encorr",
+    "~/Library/Caches/app.encorr.encorr",
+    "~/Library/HTTPStorages/app.encorr.encorr",
+    "~/Library/Preferences/app.encorr.encorr.plist",
+    "~/Library/Saved Application State/app.encorr.encorr.savedState",
+    "~/Library/WebKit/app.encorr.encorr",
   ]
 end

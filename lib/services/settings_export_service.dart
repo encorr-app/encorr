@@ -34,7 +34,7 @@ class NoUserSignedInException extends SettingsExportException {
   const NoUserSignedInException() : super('No user is signed in');
 }
 
-/// Thrown when the chosen file isn't a valid Plezy settings export.
+/// Thrown when the chosen file isn't a valid Encorr settings export.
 class InvalidExportFileException extends SettingsExportException {
   const InvalidExportFileException(super.message);
 }
@@ -275,7 +275,7 @@ class SettingsExportService {
     final y = padNumber(now.year, 4);
     final m = padNumber(now.month, 2);
     final d = padNumber(now.day, 2);
-    return 'plezy-settings-$y$m$d.$fileExtension';
+    return 'encorr-settings-$y$m$d.$fileExtension';
   }
 
   /// Serializes the current user's settings and writes them to a location of
@@ -307,7 +307,7 @@ class SettingsExportService {
 
     try {
       return await FilePickerService.instance.saveFile(
-        dialogTitle: 'Export Plezy settings',
+        dialogTitle: 'Export Encorr settings',
         fileName: fileName,
         bytes: bytes,
         type: FileType.custom,

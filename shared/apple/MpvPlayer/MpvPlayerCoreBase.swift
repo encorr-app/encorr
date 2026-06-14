@@ -491,8 +491,8 @@ class MpvPlayerCoreBase: NSObject {
     let logEnabled = cachedDvConversionLogEnabled
     cacheLock.unlock()
 
-    setenv("PLEZY_DV_CONVERSION_MODE", mode, 1)
-    setenv("PLEZY_DV_CONVERSION_LOG", logEnabled ? "1" : "0", 1)
+    setenv("ENCORR_DV_CONVERSION_MODE", mode, 1)
+    setenv("ENCORR_DV_CONVERSION_LOG", logEnabled ? "1" : "0", 1)
   }
 
   func setDvConversionMode(_ mode: String) {

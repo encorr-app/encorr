@@ -1,4 +1,4 @@
-module github.com/edde746/plezy-relay
+module github.com/encorr-app/encorr-relay
 
 go 1.22
 

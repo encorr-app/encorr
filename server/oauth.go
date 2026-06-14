@@ -93,7 +93,7 @@ func (s *oauthSession) wait(ctx context.Context) (*oauthTokenResult, error) {
 }
 
 type oauthProxy struct {
-	baseURL  string // e.g. https://ice.plezy.app
+	baseURL  string // e.g. https://ice.encorr.app
 	services map[string]oauthServiceConfig
 	client   *http.Client
 
@@ -250,7 +250,7 @@ func (p *oauthProxy) handleAuthorize(w http.ResponseWriter, r *http.Request, ser
 	sess := p.sessions[sessionID]
 	p.mu.Unlock()
 	if sess == nil || sess.service != service {
-		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Plezy.")
+		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Encorr.")
 		return
 	}
 
@@ -287,7 +287,7 @@ func (p *oauthProxy) handleCallback(w http.ResponseWriter, r *http.Request, serv
 	sess := p.sessions[state]
 	p.mu.Unlock()
 	if sess == nil || sess.service != service {
-		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Plezy.")
+		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Encorr.")
 		return
 	}
 
@@ -441,7 +441,7 @@ func (p *oauthProxy) ipAllow(ip string) bool {
 	return rl.allow()
 }
 
-const successPageHTML = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signed in</title><style>html,body{margin:0;height:100%}body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;background:#fff;color:#1a1a1a;text-align:center;padding:1em;box-sizing:border-box}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#f5f5f5}}.check{width:72px;height:72px;margin-bottom:20px}h2{margin:0 0 8px;font-weight:600;font-size:1.25rem}p{margin:0;opacity:.7;font-size:.95rem}</style><body><svg class="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#22c55e"/><path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>Signed in to Plezy</h2><p>You can close this tab and return to the app.</p></body>`
+const successPageHTML = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signed in</title><style>html,body{margin:0;height:100%}body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;background:#fff;color:#1a1a1a;text-align:center;padding:1em;box-sizing:border-box}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#f5f5f5}}.check{width:72px;height:72px;margin-bottom:20px}h2{margin:0 0 8px;font-weight:600;font-size:1.25rem}p{margin:0;opacity:.7;font-size:.95rem}</style><body><svg class="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#22c55e"/><path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>Signed in to Encorr</h2><p>You can close this tab and return to the app.</p></body>`
 
 // Split around the message so CSS `%` literals don't collide with Fprintf verbs.
 const errorPagePrefix = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign-in failed</title><style>html,body{margin:0;height:100%}body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;background:#fff;color:#1a1a1a;text-align:center;padding:1em;box-sizing:border-box}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#f5f5f5}}.x{width:72px;height:72px;margin-bottom:20px}h2{margin:0 0 8px;font-weight:600;font-size:1.25rem}p{margin:0;opacity:.7;font-size:.95rem}</style><body><svg class="x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><h2>Sign-in failed</h2><p>`

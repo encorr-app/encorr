@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plezy/widgets/app_icon.dart';
+import 'package:encorr/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
@@ -31,7 +31,7 @@ class AboutScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const SizedBox(height: 24),
-                        Image.asset('assets/plezy.png', width: 80, height: 80),
+                        Image.asset('assets/encorr_logo.png', width: 80, height: 80),
                         const SizedBox(height: 16),
                         Text(appName, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold)),
                         const SizedBox(height: 8),

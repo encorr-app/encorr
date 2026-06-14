@@ -3,7 +3,7 @@ import '../media/ids.dart';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-import 'package:plezy/widgets/app_icon.dart';
+import 'package:encorr/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,6 @@ import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
 import '../utils/library_grouping.dart';
 import '../providers/multi_server_provider.dart';
-import '../providers/seerr_provider.dart';
 import '../services/fullscreen_state_manager.dart';
 import '../theme/mono_tokens.dart';
 import '../widgets/backend_badge.dart';
@@ -116,12 +115,19 @@ class NavigationRailItem extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: () {
-                if (isCollapsed) return isFocused ? t.text.withValues(alpha: 0.12) : null;
-                if (isFocused) return t.text.withValues(alpha: showSelectedBackground ? 0.15 : 0.12);
-                if (showSelectedBackground) return t.text.withValues(alpha: 0.1);
+                if (isCollapsed) {
+                  if (isFocused) return t.accent.withValues(alpha: 0.14);
+                  if (showSelectedBackground) return t.accent.withValues(alpha: 0.1);
+                  return null;
+                }
+                if (isFocused) return t.accent.withValues(alpha: showSelectedBackground ? 0.18 : 0.14);
+                if (showSelectedBackground) return t.accent.withValues(alpha: 0.12);
                 return null;
               }(),
               borderRadius: borderRadius,
+              border: showSelectedBackground && !isFocused
+                  ? Border.all(color: t.accent.withValues(alpha: 0.22), width: 1)
+                  : null,
             ),
             clipBehavior: Clip.hardEdge,
             child: UnconstrainedBox(
@@ -138,7 +144,7 @@ class NavigationRailItem extends StatelessWidget {
                         isSelected && selectedIcon != null ? selectedIcon! : icon,
                         fill: 1,
                         size: iconSize,
-                        color: isSelected ? t.text : t.textMuted,
+                        color: isSelected || isFocused ? t.accent : t.textMuted,
                       ),
                       const SizedBox(width: 11),
                       Expanded(
@@ -368,19 +374,18 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     required List<_LibraryNavRow> hiddenRows,
     required bool hasHiddenLibraries,
     required bool hasLiveTv,
-    required bool hasSeerr,
   }) {
     return {
       _kHome,
       _kLibraries,
       _kSearch,
+      'requests',
       if (_showDownloads) _kDownloads,
       _kSettings,
       _kReconnect,
       if (hasHiddenLibraries) _kHiddenLibraries,
       if (_showFullscreenToggle) _kFullscreen,
       if (hasLiveTv) 'liveTv',
-      if (hasSeerr) 'requests',
       ..._focusKeysForLibraryRows(visibleRows),
       if (_hiddenLibrariesExpanded) ..._focusKeysForLibraryRows(hiddenRows),
     };
@@ -447,7 +452,6 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     List<_LibraryNavRow> hiddenRows, {
     required bool hasHiddenLibraries,
     required bool hasLiveTv,
-    required bool hasSeerr,
   }) {
     return [
       if (widget.isOfflineMode && widget.onReconnect != null) _kReconnect,
@@ -463,7 +467,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
         ],
         if (hasLiveTv) 'liveTv',
         _kSearch,
-        if (hasSeerr) 'requests',
+        'requests',
       ],
       if (_showDownloads) _kDownloads,
       _kSettings,
@@ -586,8 +590,6 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     final horizontalPadding = horizontalPaddingForContext(context, isCollapsed: isCollapsed);
     final itemHorizontalPadding = itemHorizontalPaddingForContext(context, isCollapsed: isCollapsed);
     final hasLiveTv = context.watch<MultiServerProvider>().hasLiveTv;
-    // Nullable lookup: tolerate harnesses (tests) without a SeerrProvider.
-    final hasSeerr = context.watch<SeerrProvider?>()?.isConfigured ?? false;
     // TV: chrome-free while collapsed, glass over content while expanded.
     // Other platforms: glass surface is always visible.
     final surfaceOpacity = PlatformDetector.isTV() && isCollapsed ? 0.0 : 1.0;
@@ -622,7 +624,6 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
             hiddenRows: hiddenRows,
             hasHiddenLibraries: hiddenLibraries.isNotEmpty,
             hasLiveTv: hasLiveTv,
-            hasSeerr: hasSeerr,
           ),
         );
         final focusOrder = _buildFocusOrder(
@@ -630,7 +631,6 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
           hiddenRows,
           hasHiddenLibraries: hiddenLibraries.isNotEmpty,
           hasLiveTv: hasLiveTv,
-          hasSeerr: hasSeerr,
         );
         _debugAssertUniqueFocusOrder(focusOrder);
         return TapRegion(
@@ -726,21 +726,17 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                                       isCollapsed: isCollapsed,
                                     ),
                                     const SizedBox(height: 8),
-                                    // Seerr Discover+ tab — visible only when a
-                                    // Seerr server is configured.
-                                    if (hasSeerr) ...[
-                                      _buildNavItem(
-                                        icon: Symbols.travel_explore_rounded,
-                                        selectedIcon: Symbols.travel_explore_rounded,
-                                        label: 'Discover+',
-                                        isSelected: widget.selectedTab == NavigationTabId.requests,
-                                        isFocused: _focusTracker.isFocused('requests'),
-                                        onTap: () => widget.onDestinationSelected(NavigationTabId.requests),
-                                        focusNode: _focusTracker.get('requests'),
-                                        isCollapsed: isCollapsed,
-                                      ),
-                                      const SizedBox(height: 8),
-                                    ],
+                                    _buildNavItem(
+                                      icon: Symbols.playlist_add_rounded,
+                                      selectedIcon: Symbols.playlist_add_rounded,
+                                      label: 'Requests',
+                                      isSelected: widget.selectedTab == NavigationTabId.requests,
+                                      isFocused: _focusTracker.isFocused('requests'),
+                                      onTap: () => widget.onDestinationSelected(NavigationTabId.requests),
+                                      focusNode: _focusTracker.get('requests'),
+                                      isCollapsed: isCollapsed,
+                                    ),
+                                    const SizedBox(height: 8),
                                   ],
                                   // Downloads (hidden on Apple TV — no user
                                   // file storage)
@@ -811,7 +807,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
         style: TextStyle(
           fontSize: 14,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          color: isSelected ? t.text : t.textMuted,
+          color: isSelected ? t.accent : t.textMuted,
         ),
         overflow: .ellipsis,
         maxLines: 1,
@@ -926,12 +922,15 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
               child: Container(
                 decoration: BoxDecoration(
                   color: () {
-                    if (isCollapsed) return isLibrariesFocused ? t.text.withValues(alpha: 0.08) : null;
-                    if (showLibrariesSelectedBackground) return t.text.withValues(alpha: 0.1);
-                    if (isLibrariesFocused) return t.text.withValues(alpha: 0.08);
+                    if (isCollapsed) return isLibrariesFocused ? t.accent.withValues(alpha: 0.14) : null;
+                    if (showLibrariesSelectedBackground) return t.accent.withValues(alpha: 0.12);
+                    if (isLibrariesFocused) return t.accent.withValues(alpha: 0.14);
                     return null;
                   }(),
                   borderRadius: BorderRadius.circular(tokens(context).radiusMd),
+                  border: showLibrariesSelectedBackground && !isLibrariesFocused
+                      ? Border.all(color: t.accent.withValues(alpha: 0.22), width: 1)
+                      : null,
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: UnconstrainedBox(
@@ -948,7 +947,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                             Symbols.video_library_rounded,
                             fill: 1,
                             size: 22,
-                            color: widget.selectedTab == NavigationTabId.libraries ? t.text : t.textMuted,
+                            color: widget.selectedTab == NavigationTabId.libraries ? t.accent : t.textMuted,
                           ),
                           const SizedBox(width: 11),
                           Expanded(
@@ -962,7 +961,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                                   fontWeight: widget.selectedTab == NavigationTabId.libraries
                                       ? FontWeight.w600
                                       : FontWeight.w400,
-                                  color: widget.selectedTab == NavigationTabId.libraries ? t.text : t.textMuted,
+                                  color: widget.selectedTab == NavigationTabId.libraries ? t.accent : t.textMuted,
                                 ),
                               ),
                             ),
@@ -1204,7 +1203,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? t.text : t.textMuted,
+                color: isSelected ? t.accent : t.textMuted,
               ),
               overflow: .ellipsis,
             ),

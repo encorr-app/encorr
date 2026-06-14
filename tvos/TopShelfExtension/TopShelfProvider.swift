@@ -2,8 +2,8 @@ import Foundation
 import TVServices
 
 private enum TopShelfShared {
-  static let appGroupIdentifier = "group.com.edde746.plezy"
-  static let cacheDataKey = "PlezySystemShelfCacheData"
+  static let appGroupIdentifier = "group.app.encorr.encorr"
+  static let cacheDataKey = "EncorrSystemShelfCacheData"
 
   static var sharedDefaults: UserDefaults? {
     UserDefaults(suiteName: appGroupIdentifier)
@@ -163,7 +163,7 @@ final class TopShelfProvider: TVTopShelfContentProvider {
 
   private func deepLinkURL(contentId: String) -> URL? {
     var components = URLComponents()
-    components.scheme = "plezy"
+    components.scheme = "encorr"
     components.host = "play"
     components.queryItems = [URLQueryItem(name: "content_id", value: contentId)]
     return components.url

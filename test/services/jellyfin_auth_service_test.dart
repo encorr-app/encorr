@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/connection/connection.dart';
-import 'package:plezy/exceptions/media_server_exceptions.dart';
-import 'package:plezy/services/jellyfin_auth_service.dart';
-import 'package:plezy/utils/log_redaction_manager.dart';
+import 'package:encorr/connection/connection.dart';
+import 'package:encorr/exceptions/media_server_exceptions.dart';
+import 'package:encorr/services/jellyfin_auth_service.dart';
+import 'package:encorr/utils/log_redaction_manager.dart';
 
 /// Helpers for stubbing http responses keyed by request path.
 typedef _Handler = http.Response Function(http.BaseRequest req);
@@ -30,7 +30,7 @@ JellyfinConnection _existingConn({String accessToken = 'tok-old'}) => JellyfinCo
 
 JellyfinConnectionAuthService _service({required _Handler handler}) {
   return JellyfinConnectionAuthService(
-    clientName: 'Plezy',
+    clientName: 'Encorr',
     clientVersion: 'test',
     deviceName: 'TestDevice',
     testHttpClientFactory: () => MockClient((req) async => handler(req)),
@@ -215,7 +215,7 @@ void main() {
 
     test('returns false on transport error', () async {
       final svc = JellyfinConnectionAuthService(
-        clientName: 'Plezy',
+        clientName: 'Encorr',
         clientVersion: 'test',
         deviceName: 'TestDevice',
         testHttpClientFactory: () => MockClient((_) async => throw http.ClientException('network down')),

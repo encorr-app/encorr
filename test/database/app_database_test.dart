@@ -1,12 +1,12 @@
 import 'dart:io';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/database/app_database.dart';
-import 'package:plezy/database/download_operations.dart';
-import 'package:plezy/models/download_models.dart';
+import 'package:encorr/database/app_database.dart';
+import 'package:encorr/database/download_operations.dart';
+import 'package:encorr/models/download_models.dart';
 
 void main() {
   final suite = _AppDatabaseTestSuite();
@@ -112,8 +112,8 @@ class _AppDatabaseTestSuite {
 
       test('retried v14 migration tolerates existing indices', () async {
         await db.close();
-        final tempDir = await Directory.systemTemp.createTemp('plezy_db_migration_test_');
-        final file = File('${tempDir.path}/plezy_downloads.db');
+        final tempDir = await Directory.systemTemp.createTemp('encorr_db_migration_test_');
+        final file = File('${tempDir.path}/encorr_downloads.db');
         AppDatabase? seeded;
         AppDatabase? reopened;
 
@@ -154,7 +154,7 @@ class _AppDatabaseTestSuite {
       late Directory tempDir;
 
       setUp(() async {
-        tempDir = await Directory.systemTemp.createTemp('plezy_legacy_migration_test_');
+        tempDir = await Directory.systemTemp.createTemp('encorr_legacy_migration_test_');
       });
 
       tearDown(() async {
@@ -164,8 +164,8 @@ class _AppDatabaseTestSuite {
       });
 
       test('no-op when source does not exist', () async {
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+        final source = File('${tempDir.path}/Documents/encorr_downloads.db');
+        final target = File('${tempDir.path}/AppData/encorr_downloads.db');
         await target.parent.create(recursive: true);
 
         await migrateLegacyDesktopDatabase(sourceOverride: source, target: target);
@@ -175,8 +175,8 @@ class _AppDatabaseTestSuite {
       });
 
       test('rename happy path moves the file and preserves content', () async {
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+        final source = File('${tempDir.path}/Documents/encorr_downloads.db');
+        final target = File('${tempDir.path}/AppData/encorr_downloads.db');
         await source.parent.create(recursive: true);
         await target.parent.create(recursive: true);
         await source.writeAsBytes([1, 2, 3, 4, 5]);
@@ -192,8 +192,8 @@ class _AppDatabaseTestSuite {
         // Simulate Windows ERROR_NOT_SAME_DEVICE by throwing the same
         // exception shape `File.rename` would emit when source and target
         // live on different volumes.
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+        final source = File('${tempDir.path}/Documents/encorr_downloads.db');
+        final target = File('${tempDir.path}/AppData/encorr_downloads.db');
         await source.parent.create(recursive: true);
         await target.parent.create(recursive: true);
         await source.writeAsBytes([9, 8, 7]);
@@ -214,10 +214,10 @@ class _AppDatabaseTestSuite {
       });
 
       test('copy failure leaves source intact and never throws', () async {
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+        final source = File('${tempDir.path}/Documents/encorr_downloads.db');
         // Point target at a non-existent directory so copy fails. The
         // helper must swallow the error — splash boot must never see it.
-        final target = File('${tempDir.path}/does-not-exist/AppData/plezy_downloads.db');
+        final target = File('${tempDir.path}/does-not-exist/AppData/encorr_downloads.db');
         await source.parent.create(recursive: true);
         await source.writeAsBytes([0xAA, 0xBB]);
 

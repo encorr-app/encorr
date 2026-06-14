@@ -10,18 +10,18 @@
 
   const { data } = $props();
 
-  const title = "Plezy - A Beautiful Plex & Jellyfin Client";
-  const description = "Plezy is a beautiful client for Plex and Jellyfin, available on iOS, Android, Android TV, tvOS, Windows, macOS, and Linux. HDR, Dolby Vision, offline downloads, and more.";
-  const url = "https://plezy.app/";
-  const image = "https://plezy.app/og/plezy-social.png";
+  const title = "Encorr - A Beautiful Plex & Jellyfin Client";
+  const description = "Encorr is a beautiful client for Plex and Jellyfin, available on iOS, Android, Android TV, tvOS, Windows, macOS, and Linux. HDR, Dolby Vision, offline downloads, and more.";
+  const url = "https://encorr.app/";
+  const image = "https://encorr.app/og/encorr-social.png";
 
   const softwareAppSchema = $derived.by(() => {
     const schema: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "Plezy",
+      "name": "Encorr",
       "description": description,
-      "url": "https://plezy.app",
+      "url": "https://encorr.app",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "iOS, Android, Android TV, tvOS, Windows, macOS, Linux",
       "offers": [
@@ -34,7 +34,7 @@
         },
         {
           "@type": "Offer",
-          "url": "https://play.google.com/store/apps/details?id=com.edde746.plezy",
+          "url": "https://play.google.com/store/apps/details?id=app.encorr.encorr",
           "price": data.playStorePrice ?? "0",
           "priceCurrency": "USD",
           "category": "Google Play"
@@ -46,7 +46,7 @@
         },
         {
           "@type": "Offer",
-          "url": "https://github.com/edde746/plezy",
+          "url": "https://github.com/encorr-app/encorr",
           "price": "0",
           "priceCurrency": "USD",
           "category": "GitHub"
@@ -80,7 +80,7 @@
   <link rel="canonical" href={url} />
 
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Plezy" />
+  <meta property="og:site_name" content="Encorr" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={url} />

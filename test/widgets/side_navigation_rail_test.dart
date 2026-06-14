@@ -1,25 +1,25 @@
 import 'dart:ui' show PointerDeviceKind;
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/i18n/strings.g.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_library.dart';
-import 'package:plezy/navigation/navigation_tabs.dart';
-import 'package:plezy/providers/hidden_libraries_provider.dart';
-import 'package:plezy/providers/libraries_provider.dart';
-import 'package:plezy/providers/multi_server_provider.dart';
-import 'package:plezy/services/data_aggregation_service.dart';
-import 'package:plezy/services/multi_server_manager.dart';
-import 'package:plezy/services/settings_service.dart';
-import 'package:plezy/theme/mono_tokens.dart';
-import 'package:plezy/utils/platform_detector.dart';
-import 'package:plezy/widgets/app_icon.dart';
-import 'package:plezy/widgets/glass/glass_panel.dart';
-import 'package:plezy/widgets/side_navigation_rail.dart';
+import 'package:encorr/i18n/strings.g.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_library.dart';
+import 'package:encorr/navigation/navigation_tabs.dart';
+import 'package:encorr/providers/hidden_libraries_provider.dart';
+import 'package:encorr/providers/libraries_provider.dart';
+import 'package:encorr/providers/multi_server_provider.dart';
+import 'package:encorr/services/data_aggregation_service.dart';
+import 'package:encorr/services/multi_server_manager.dart';
+import 'package:encorr/services/settings_service.dart';
+import 'package:encorr/theme/mono_tokens.dart';
+import 'package:encorr/utils/platform_detector.dart';
+import 'package:encorr/widgets/app_icon.dart';
+import 'package:encorr/widgets/glass/glass_panel.dart';
+import 'package:encorr/widgets/side_navigation_rail.dart';
 import 'package:provider/provider.dart';
 
 import '../test_helpers/prefs.dart';
@@ -183,7 +183,7 @@ void main() {
     expect((selectedItemContainer.decoration as BoxDecoration?)?.color, isNull);
   });
 
-  // Plezy-Seerr fork: the expanded TV rail draws a glass surface over the
+  // Encorr fork: the expanded TV rail draws a glass surface over the
   // content (upstream kept it fully transparent).
   testWidgets('expanded TV rail shows the glass surface', (tester) async {
     TvDetectionService.debugSetAppleTVOverride(true);

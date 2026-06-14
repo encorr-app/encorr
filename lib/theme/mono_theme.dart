@@ -1,46 +1,50 @@
 import 'package:flutter/material.dart';
+import 'encorr_brand.dart';
 import 'gapped_track_shape.dart';
 import 'mono_tokens.dart';
 
 ThemeData monoTheme({required bool dark, bool oled = false}) {
-  // neutral greys tuned for crisp contrast
-  final ({Color bg, Color surface, Color outline, Color text, Color textMuted}) c;
+  final ({Color bg, Color surface, Color outline, Color text, Color textMuted, Color accent, Color accentSecondary}) c;
   if (oled) {
     c = (
-      bg: const Color(0xFF000000), // Pure black for OLED
-      surface: const Color(0xFF0A0A0A), // Very dark gray
-      outline: const Color(0x1FFFFFFF),
-      text: const Color(0xFFEDEDED),
-      textMuted: const Color(0x99EDEDED),
+      bg: EncorrBrand.oledBg,
+      surface: EncorrBrand.oledSurface,
+      outline: const Color(0x24FFFFFF),
+      text: const Color(0xFFF5F5F7),
+      textMuted: const Color(0x99F5F5F7),
+      accent: EncorrBrand.orange,
+      accentSecondary: EncorrBrand.magenta,
     );
   } else if (dark) {
     c = (
-      bg: const Color(0xFF0E0F12),
-      surface: const Color(0xFF15171C),
-      outline: const Color(0x1FFFFFFF),
-      text: const Color(0xFFEDEDED),
-      textMuted: const Color(0x99EDEDED),
+      bg: EncorrBrand.darkBg,
+      surface: EncorrBrand.darkSurface,
+      outline: const Color(0x24FFFFFF),
+      text: const Color(0xFFF5F5F7),
+      textMuted: const Color(0x99F5F5F7),
+      accent: EncorrBrand.orange,
+      accentSecondary: EncorrBrand.magenta,
     );
   } else {
     c = (
-      bg: const Color(0xFFF7F7F8),
-      surface: const Color(0xFFFFFFFF),
+      bg: EncorrBrand.lightBg,
+      surface: EncorrBrand.lightSurface,
       outline: const Color(0x19000000),
-      text: const Color(0xFF111111),
-      textMuted: const Color(0x99111111),
+      text: const Color(0xFF111018),
+      textMuted: const Color(0x99111018),
+      accent: EncorrBrand.orange,
+      accentSecondary: EncorrBrand.magenta,
     );
   }
 
   final isDark = dark || oled;
 
-  // Glass tokens (Plezy-Seerr fork): translucent fills tuned so backdrop blur
-  // reads through while text stays legible on each theme variant.
   final glassSurface = oled
-      ? const Color(0x990A0A0A) // 60% very dark gray
+      ? const Color(0x990A0810)
       : dark
-      ? const Color(0x9915171C) // 60% dark surface
-      : const Color(0xB3FFFFFF); // 70% white
-  final glassBorder = isDark ? const Color(0x26FFFFFF) : const Color(0x14000000);
+      ? const Color(0x9912101A)
+      : const Color(0xB3FFFFFF);
+  final glassBorder = isDark ? const Color(0x33FFFFFF) : const Color(0x14000000);
   final scrimStrong = isDark ? const Color(0xCC000000) : const Color(0x8C000000);
   const scrimSoft = Color(0x00000000);
   final clickableCursor = WidgetStateProperty.resolveWith<MouseCursor>(
@@ -49,10 +53,25 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
 
   final buttonStyle = ButtonStyle(
     mouseCursor: clickableCursor,
-    padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 18, vertical: 14)),
+    padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20, vertical: 14)),
     elevation: const WidgetStatePropertyAll(0),
-    backgroundColor: WidgetStatePropertyAll(c.text),
-    foregroundColor: WidgetStatePropertyAll(isDark ? c.bg : Colors.white),
+    backgroundColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.disabled)) return c.text.withValues(alpha: 0.18);
+      return c.accent;
+    }),
+    foregroundColor: const WidgetStatePropertyAll(Colors.white),
+    overlayColor: WidgetStatePropertyAll(Colors.white.withValues(alpha: 0.12)),
+    shape: const WidgetStatePropertyAll(StadiumBorder()),
+  );
+
+  final outlinedButtonStyle = ButtonStyle(
+    mouseCursor: clickableCursor,
+    padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20, vertical: 14)),
+    foregroundColor: WidgetStatePropertyAll(c.text),
+    side: WidgetStateProperty.resolveWith((states) {
+      final color = states.contains(WidgetState.focused) ? c.accent : c.outline;
+      return BorderSide(color: color, width: states.contains(WidgetState.focused) ? 1.5 : 1);
+    }),
     shape: const WidgetStatePropertyAll(StadiumBorder()),
   );
 
@@ -61,19 +80,19 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
     brightness: isDark ? Brightness.dark : Brightness.light,
     colorScheme: ColorScheme(
       brightness: isDark ? Brightness.dark : Brightness.light,
-      primary: c.text,
-      onPrimary: isDark ? c.bg : Colors.white,
-      secondary: c.text,
-      onSecondary: c.bg,
+      primary: c.accent,
+      onPrimary: Colors.white,
+      secondary: c.accentSecondary,
+      onSecondary: Colors.white,
       surface: c.surface,
       onSurface: c.text,
-      error: const Color(0xFFB00020),
+      error: const Color(0xFFFF4D6D),
       onError: Colors.white,
-      tertiary: c.text,
-      onTertiary: c.bg,
-      primaryContainer: c.surface,
+      tertiary: EncorrBrand.purple,
+      onTertiary: Colors.white,
+      primaryContainer: c.accent.withValues(alpha: isDark ? 0.18 : 0.12),
       onPrimaryContainer: c.text,
-      secondaryContainer: c.surface,
+      secondaryContainer: c.accentSecondary.withValues(alpha: isDark ? 0.16 : 0.1),
       onSecondaryContainer: c.text,
       surfaceContainerHighest: c.surface,
       surfaceContainerLow: c.bg,
@@ -86,40 +105,58 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
       onInverseSurface: c.bg,
       inversePrimary: c.bg,
     ),
-    // remove "Material feel"
     splashFactory: NoSplash.splashFactory,
     highlightColor: Colors.transparent,
     dividerColor: c.outline,
     scaffoldBackgroundColor: c.bg,
+    progressIndicatorTheme: ProgressIndicatorThemeData(color: c.accent, linearTrackColor: c.outline),
     appBarTheme: AppBarTheme(
       backgroundColor: c.bg,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
       foregroundColor: c.text,
-      titleTextStyle: TextStyle(color: c.text, fontSize: 18, fontWeight: .w700, letterSpacing: -0.2),
+      titleTextStyle: TextStyle(
+        color: c.text,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.6,
+      ),
     ),
     textTheme: Typography.englishLike2021
         .apply(bodyColor: c.text, displayColor: c.text)
         .copyWith(
-          displayLarge: const TextStyle(fontWeight: .w700, letterSpacing: -0.5),
-          titleMedium: const TextStyle(fontWeight: .w600),
+          displayLarge: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.2, color: c.text),
+          displaySmall: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 0.8, color: c.text),
+          headlineMedium: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.8, color: c.text),
+          titleLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.4, color: c.text),
+          titleMedium: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.2, color: c.text),
           bodyMedium: TextStyle(color: c.text),
           bodySmall: TextStyle(color: c.textMuted),
+          labelLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.4, color: c.text),
         ),
     cardTheme: CardThemeData(
       color: c.surface,
       elevation: 0,
-      margin: .zero,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
+      margin: EdgeInsets.zero,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
     ),
-    inputDecorationTheme: _inputDecorationTheme(c.text, c.textMuted),
+    inputDecorationTheme: _inputDecorationTheme(c.text, c.textMuted, c.accent),
     elevatedButtonTheme: ElevatedButtonThemeData(style: buttonStyle),
     filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
-    textButtonTheme: TextButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
-    outlinedButtonTheme: OutlinedButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        mouseCursor: clickableCursor,
+        foregroundColor: WidgetStatePropertyAll(c.accent),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: outlinedButtonStyle),
     iconButtonTheme: IconButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
     sliderTheme: SliderThemeData(
+      activeTrackColor: c.accent,
+      inactiveTrackColor: c.outline,
+      thumbColor: c.accent,
+      overlayColor: c.accent.withValues(alpha: 0.12),
       trackHeight: 16,
       trackGap: 6,
       thumbSize: const WidgetStatePropertyAll(Size(4, 20)),
@@ -139,23 +176,27 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: c.bg,
       elevation: 0,
-      indicatorColor: Colors.transparent,
-      labelTextStyle: WidgetStatePropertyAll(TextStyle(color: c.textMuted, fontSize: 11)),
+      indicatorColor: c.accent.withValues(alpha: 0.18),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final active = states.contains(WidgetState.selected);
+        return TextStyle(
+          color: active ? c.accent : c.textMuted,
+          fontSize: 11,
+          fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+        );
+      }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final active = states.contains(WidgetState.selected);
-        return IconThemeData(opacity: active ? 1 : 0.6, size: 22, color: c.text);
+        return IconThemeData(opacity: active ? 1 : 0.6, size: 22, color: active ? c.accent : c.text);
       }),
     ),
-    // Floating snackbars auto-offset above the Scaffold's bottom NavigationBar,
-    // so they don't cover it on mobile. Background color tracks the theme to
-    // avoid jarring brightness on HDR playback / dark mode.
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       backgroundColor: c.surface,
       contentTextStyle: TextStyle(color: c.text),
-      actionTextColor: c.text,
+      actionTextColor: c.accent,
       elevation: 6,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
       insetPadding: const EdgeInsets.all(16),
     ),
   );
@@ -163,8 +204,8 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
   return base.copyWith(
     extensions: [
       MonoTokens(
-        radiusSm: 8,
-        radiusMd: 12,
+        radiusSm: 10,
+        radiusMd: 14,
         space: 12,
         fast: const Duration(milliseconds: 120),
         normal: const Duration(milliseconds: 200),
@@ -174,6 +215,8 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
         outline: c.outline,
         text: c.text,
         textMuted: c.textMuted,
+        accent: c.accent,
+        accentSecondary: c.accentSecondary,
         splashFactory: NoSplash.splashFactory,
         glassSurface: glassSurface,
         glassBlurSigma: 20,
@@ -185,11 +228,14 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
   );
 }
 
-/// Brighter fill on focus so input focus is visible inside TV overscan.
-InputDecorationTheme _inputDecorationTheme(Color text, Color textMuted) {
+InputDecorationTheme _inputDecorationTheme(Color text, Color textMuted, Color accent) {
   final unfocusedFill = text.withValues(alpha: 0.08);
-  final focusedFill = text.withValues(alpha: 0.18);
-  const border = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)), borderSide: BorderSide.none);
+  final focusedFill = accent.withValues(alpha: 0.12);
+  final border = OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none);
+  final focusedBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(14),
+    borderSide: BorderSide(color: accent.withValues(alpha: 0.55), width: 1.5),
+  );
   return InputDecorationTheme(
     filled: true,
     fillColor: WidgetStateColor.resolveWith(
@@ -199,7 +245,7 @@ InputDecorationTheme _inputDecorationTheme(Color text, Color textMuted) {
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     border: border,
     enabledBorder: border,
-    focusedBorder: border,
+    focusedBorder: focusedBorder,
     hintStyle: TextStyle(color: textMuted),
   );
 }

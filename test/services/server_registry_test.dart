@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/services/plex_auth_service.dart';
-import 'package:plezy/services/server_registry.dart';
-import 'package:plezy/services/storage_service.dart';
+import 'package:encorr/services/plex_auth_service.dart';
+import 'package:encorr/services/server_registry.dart';
+import 'package:encorr/services/storage_service.dart';
 
 import '../test_helpers/prefs.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/services/jellyfin_lan_discovery_service.dart';
+import 'package:encorr/services/jellyfin_lan_discovery_service.dart';
 
 void main() {
   group('JellyfinLanDiscoveryService', () {

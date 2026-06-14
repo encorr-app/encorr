@@ -1,6 +1,6 @@
 # Constructed from JNI via FindClass/NewObject (AssKt.c).
--keep class com.edde746.plezy.libass.AssAtlasFrame { *; }
-# JNI exports bind by name (Java_com_edde746_plezy_libass_*); keep the names stable.
--keepclasseswithmembernames class com.edde746.plezy.libass.* {
+-keep class app.encorr.encorr.libass.AssAtlasFrame { *; }
+# JNI exports bind by name (Java_app_encorr_encorr_libass_*); keep the names stable.
+-keepclasseswithmembernames class app.encorr.encorr.libass.* {
     native <methods>;
 }

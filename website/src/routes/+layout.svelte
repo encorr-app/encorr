@@ -7,17 +7,17 @@
 	const siteSchema = {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
-		"name": "Plezy",
-		"url": "https://plezy.app"
+		"name": "Encorr",
+		"url": "https://encorr.app"
 	};
 
 	const orgSchema = {
 		"@context": "https://schema.org",
 		"@type": "Organization",
-		"name": "Plezy",
-		"url": "https://plezy.app",
-		"logo": "https://plezy.app/og/plezy-social.png",
-		"sameAs": ["https://github.com/edde746/plezy"]
+		"name": "Encorr",
+		"url": "https://encorr.app",
+		"logo": "https://encorr.app/og/encorr-social.png",
+		"sameAs": ["https://github.com/encorr-app/encorr"]
 	};
 </script>
 

@@ -1,4 +1,4 @@
-name: plezy
+name: encorr
 description: "A beautiful Plex and Jellyfin client for Flutter"
 publish_to: "none"
 version: 2.6.0+112
@@ -127,17 +127,17 @@ dependency_overrides:
       ref: 1d8cd83
 
 sentry:
-  org: plezy
-  project: plezy
-  url: https://bugs.plezy.app
+  org: encorr
+  project: encorr
+  url: https://bugs.encorr.app
   upload_sources: true
   commits: false
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/plezy.png
-    - assets/plezy_adaptive_foreground.svg
+    - assets/encorr_logo.png
+    - assets/encorr_logo.png
     - assets/plex_chevron.svg
     - assets/jellyfin_icon.svg
     - assets/trakt_circlemark.svg

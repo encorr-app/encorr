@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:plezy/utils/media_image_helper.dart';
-import 'package:plezy/widgets/optimized_media_image.dart';
+import 'package:encorr/utils/media_image_helper.dart';
+import 'package:encorr/widgets/optimized_media_image.dart';
 
 void main() {
   testWidgets('failed image placeholders keep explicit dimensions in loose layouts', (tester) async {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: upload-symbols.sh <platform> [source-root]
 # Env: SENTRY_AUTH_TOKEN or BUGS_ADMIN_TOKEN (required unless BUGS_UPLOAD_DRY_RUN is set)
-#      SENTRY_URL or BUGS_URL (default https://bugs.plezy.app)
+#      SENTRY_URL or BUGS_URL (default https://bugs.encorr.app)
 # Platforms: macos | ios | android-apk | android-aab | linux-x64 | linux-arm64
 set -euo pipefail
 
@@ -78,8 +78,8 @@ if ! found_symbol_file; then
   exit 3
 fi
 
-export SENTRY_URL="${SENTRY_URL:-${BUGS_URL:-https://bugs.plezy.app}}"
-export SENTRY_RELEASE="${SENTRY_RELEASE:-plezy@$(git rev-parse --short HEAD)}"
+export SENTRY_URL="${SENTRY_URL:-${BUGS_URL:-https://bugs.encorr.app}}"
+export SENTRY_RELEASE="${SENTRY_RELEASE:-encorr@$(git rev-parse --short HEAD)}"
 export SENTRY_LOG_LEVEL="${SENTRY_LOG_LEVEL:-info}"
 
 if [ -z "${SENTRY_AUTH_TOKEN:-}" ] && [ -n "${BUGS_ADMIN_TOKEN:-}" ]; then

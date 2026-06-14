@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/mpv/mpv.dart';
-import 'package:plezy/mpv/player/platform/player_android.dart';
-import 'package:plezy/mpv/player/player_native.dart';
+import 'package:encorr/mpv/mpv.dart';
+import 'package:encorr/mpv/player/platform/player_android.dart';
+import 'package:encorr/mpv/player/player_native.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -12,8 +12,8 @@ void main() {
   group('player open', () {
     test('ExoPlayer clears stale Dart track state before opening new media', () async {
       await _withMockChannels(
-        methodChannelName: 'com.plezy/exo_player',
-        eventChannelName: 'com.plezy/exo_player/events',
+        methodChannelName: 'com.encorr/exo_player',
+        eventChannelName: 'com.encorr/exo_player/events',
         testBody: () async {
           final player = PlayerAndroid();
           try {
@@ -38,8 +38,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/exo_player',
-        eventChannelName: 'com.plezy/exo_player/events',
+        methodChannelName: 'com.encorr/exo_player',
+        eventChannelName: 'com.encorr/exo_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -91,8 +91,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/exo_player',
-        eventChannelName: 'com.plezy/exo_player/events',
+        methodChannelName: 'com.encorr/exo_player',
+        eventChannelName: 'com.encorr/exo_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -137,8 +137,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/exo_player',
-        eventChannelName: 'com.plezy/exo_player/events',
+        methodChannelName: 'com.encorr/exo_player',
+        eventChannelName: 'com.encorr/exo_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -185,8 +185,8 @@ void main() {
 
     test('MPV clears stale Dart track state before opening new media', () async {
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         testBody: () async {
           final player = PlayerNative();
           try {
@@ -211,8 +211,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -249,8 +249,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -283,8 +283,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -317,8 +317,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -360,8 +360,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           switch (call.method) {
@@ -400,8 +400,8 @@ void main() {
       final calls = <MethodCall>[];
 
       await _withMockChannels(
-        methodChannelName: 'com.plezy/mpv_player',
-        eventChannelName: 'com.plezy/mpv_player/events',
+        methodChannelName: 'com.encorr/mpv_player',
+        eventChannelName: 'com.encorr/mpv_player/events',
         methodHandler: (call) {
           calls.add(call);
           return Future.value(null);

@@ -19,30 +19,30 @@
 </script>
 
 <svelte:head>
-  <title>Open in Plezy</title>
-  <meta name="description" content="Open this QR code with the Plezy app." />
+  <title>Open in Encorr</title>
+  <meta name="description" content="Open this QR code with the Encorr app." />
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="canonical" href="https://plezy.app/scan" />
+  <link rel="canonical" href="https://encorr.app/scan" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Plezy" />
-  <meta property="og:title" content="Open in Plezy" />
-  <meta property="og:description" content="Open this QR code with the Plezy app." />
-  <meta property="og:url" content="https://plezy.app/scan" />
-  <meta property="og:image" content="https://plezy.app/og/plezy-social.png" />
+  <meta property="og:site_name" content="Encorr" />
+  <meta property="og:title" content="Open in Encorr" />
+  <meta property="og:description" content="Open this QR code with the Encorr app." />
+  <meta property="og:url" content="https://encorr.app/scan" />
+  <meta property="og:image" content="https://encorr.app/og/encorr-social.png" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Open in Plezy" />
-  <meta name="twitter:description" content="Open this QR code with the Plezy app." />
-  <meta name="twitter:image" content="https://plezy.app/og/plezy-social.png" />
+  <meta name="twitter:title" content="Open in Encorr" />
+  <meta name="twitter:description" content="Open this QR code with the Encorr app." />
+  <meta name="twitter:image" content="https://encorr.app/og/encorr-social.png" />
 </svelte:head>
 
 <div class="scan-page">
   <div class="scan-card">
     <span class="scan-logo"><Logo /></span>
 
-    <h1 class="scan-heading">Scan in Plezy</h1>
-    <p class="scan-description">To use this feature, scan this QR code with the Plezy app.</p>
+    <h1 class="scan-heading">Scan in Encorr</h1>
+    <p class="scan-description">To use this feature, scan this QR code with the Encorr app.</p>
 
     <div class="store-buttons">
       {#if platform !== "android"}
@@ -59,7 +59,7 @@
 
       {#if platform !== "ios"}
         <a
-          href="https://play.google.com/store/apps/details?id=com.edde746.plezy"
+          href="https://play.google.com/store/apps/details?id=app.encorr.encorr"
           target="_blank"
           rel="noopener noreferrer"
           class="store-button"

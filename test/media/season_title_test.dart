@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/i18n/strings.g.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_item_types.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/season_title.dart';
+import 'package:encorr/i18n/strings.g.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_item_types.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/season_title.dart';
 
 /// Pins the #1271 behavior: a server's generic English "Season N" title is
 /// re-localized to the current app locale, while custom / already-localized

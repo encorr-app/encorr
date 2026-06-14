@@ -172,7 +172,7 @@ class ConnectionBootstrap {
   }
 
   /// Hydrate Plex Home users for [account] and select a virtual Plex Home
-  /// profile. Plex users are never persisted as local Plezy profiles.
+  /// profile. Plex users are never persisted as local Encorr profiles.
   Future<bool> _preparePlexVirtualProfile(PlexAccountConnection account) async {
     final copied = await _migrateLegacyPlexHomeUsersCache(account.id);
     var users = copied ? _readPlexHomeUsersCache(account.id) : null;

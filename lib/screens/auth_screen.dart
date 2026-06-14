@@ -23,6 +23,7 @@ import '../media/media_backend.dart';
 import '../utils/navigation_transitions.dart';
 import '../widgets/backend_badge.dart';
 import '../widgets/dialog_action_button.dart';
+import '../widgets/encorr/encorr_ambient_background.dart';
 import 'auth/plex_pin_auth_flow.dart';
 import 'main_screen.dart';
 import 'profile/profile_switch_screen.dart';
@@ -217,60 +218,68 @@ class _AuthScreenState extends State<AuthScreen> {
       canRequestFocus: false,
       onKeyEvent: (_, event) => handleBackKeyNavigation(context, event),
       child: Scaffold(
-        body: Center(
-          child: Container(
-            constraints: BoxConstraints(maxWidth: isDesktop ? 800 : 400),
-            padding: const EdgeInsets.all(24),
-            child: isDesktop
-                ? Row(
-                    crossAxisAlignment: .center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: .center,
-                          crossAxisAlignment: .center,
-                          children: [
-                            Image.asset('assets/plezy.png', width: 120, height: 120),
-                            const SizedBox(height: 24),
-                            Text(
-                              t.app.title,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+        body: EncorrAmbientBackground(
+          child: Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: isDesktop ? 800 : 400),
+              padding: const EdgeInsets.all(24),
+              child: isDesktop
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset('assets/encorr_logo.png', width: 120, height: 120),
+                              const SizedBox(height: 24),
+                              Text(
+                                t.app.title,
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.2,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 48),
-                      Expanded(
-                        child: Center(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: .min,
-                              crossAxisAlignment: .stretch,
-                              children: [_buildAuthBody()],
+                        const SizedBox(width: 48),
+                        Expanded(
+                          child: Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [_buildAuthBody()],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: .min,
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        Image.asset('assets/plezy.png', width: 120, height: 120),
-                        const SizedBox(height: 24),
-                        Text(
-                          t.app.title,
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 48),
-                        _buildAuthBody(),
                       ],
+                    )
+                  : SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Image.asset('assets/encorr_logo.png', width: 120, height: 120),
+                          const SizedBox(height: 24),
+                          Text(
+                            t.app.title,
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.2,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 48),
+                          _buildAuthBody(),
+                        ],
+                      ),
                     ),
-                  ),
+            ),
           ),
         ),
       ),

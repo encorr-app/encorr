@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/services/base_shared_preferences_service.dart';
-import 'package:plezy/services/storage_service.dart';
+import 'package:encorr/services/base_shared_preferences_service.dart';
+import 'package:encorr/services/storage_service.dart';
 
 import '../test_helpers/prefs.dart';
 

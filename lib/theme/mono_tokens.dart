@@ -16,9 +16,11 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
   final Color outline;
   final Color text;
   final Color textMuted;
+  final Color accent;
+  final Color accentSecondary;
   final InteractiveInkFeatureFactory? splashFactory;
 
-  // Glass design tokens (Plezy-Seerr fork): translucent chrome over content.
+  // Glass design tokens (Encorr fork): translucent chrome over content.
   /// Translucent fill drawn over the backdrop blur.
   final Color glassSurface;
 
@@ -46,6 +48,8 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     required this.outline,
     required this.text,
     required this.textMuted,
+    required this.accent,
+    required this.accentSecondary,
     required this.splashFactory,
     required this.glassSurface,
     required this.glassBlurSigma,
@@ -67,6 +71,8 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     Color? outline,
     Color? text,
     Color? textMuted,
+    Color? accent,
+    Color? accentSecondary,
     InteractiveInkFeatureFactory? splashFactory,
     Color? glassSurface,
     double? glassBlurSigma,
@@ -85,6 +91,8 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
     outline: outline ?? this.outline,
     text: text ?? this.text,
     textMuted: textMuted ?? this.textMuted,
+    accent: accent ?? this.accent,
+    accentSecondary: accentSecondary ?? this.accentSecondary,
     splashFactory: splashFactory ?? this.splashFactory,
     glassSurface: glassSurface ?? this.glassSurface,
     glassBlurSigma: glassBlurSigma ?? this.glassBlurSigma,
@@ -115,6 +123,8 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
       outline: lerpC(outline, other.outline),
       text: lerpC(text, other.text),
       textMuted: lerpC(textMuted, other.textMuted),
+      accent: lerpC(accent, other.accent),
+      accentSecondary: lerpC(accentSecondary, other.accentSecondary),
       splashFactory: other.splashFactory,
       glassSurface: lerpC(glassSurface, other.glassSurface),
       glassBlurSigma: lerpDouble(glassBlurSigma, other.glassBlurSigma, t)!,

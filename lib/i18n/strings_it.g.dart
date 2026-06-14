@@ -94,7 +94,7 @@ class _TranslationsAppIt extends TranslationsAppEn {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Plezy';
+	@override String get title => 'Encorr';
 }
 
 // Path: auth
@@ -215,7 +215,7 @@ class _TranslationsSettingsIt extends TranslationsSettingsEn {
 
 	// Translations
 	@override String get title => 'Impostazioni';
-	@override String get supportDeveloper => 'Supporta Plezy';
+	@override String get supportDeveloper => 'Supporta Encorr';
 	@override String get supportDeveloperDescription => 'Dona tramite Liberapay per finanziare lo sviluppo';
 	@override String get language => 'Lingua';
 	@override String get theme => 'Tema';
@@ -320,7 +320,7 @@ class _TranslationsSettingsIt extends TranslationsSettingsEn {
 	@override String get importSettingsConfirm => 'Questa azione sostituirà le impostazioni attuali. Continuare?';
 	@override String get importSettingsSuccess => 'Impostazioni importate';
 	@override String get importSettingsFailed => 'Impossibile importare le impostazioni';
-	@override String get importSettingsInvalidFile => 'Questo file non è un\'esportazione Plezy valida';
+	@override String get importSettingsInvalidFile => 'Questo file non è un\'esportazione Encorr valida';
 	@override String get importSettingsNoUser => 'Accedi prima di importare le impostazioni';
 	@override String get shortcutsReset => 'Scorciatoie ripristinate alle impostazioni predefinite';
 	@override String get about => 'Informazioni';
@@ -401,7 +401,7 @@ class _TranslationsSettingsIt extends TranslationsSettingsEn {
 	@override String get forceTvMode => 'Forza modalità TV';
 	@override String get forceTvModeDescription => 'Forza layout TV. Per dispositivi non rilevati automaticamente. Richiede riavvio.';
 	@override String get startInFullscreen => 'Avvia a schermo intero';
-	@override String get startInFullscreenDescription => 'Apri Plezy a schermo intero all\'avvio';
+	@override String get startInFullscreenDescription => 'Apri Encorr a schermo intero all\'avvio';
 	@override String get exitFullscreenOnPlayerClose => 'Esci dallo schermo intero alla chiusura del player';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Esci automaticamente dallo schermo intero quando il lettore video viene chiuso';
 	@override String get autoHidePerformanceOverlay => 'Nascondi automaticamente overlay prestazioni';
@@ -409,7 +409,7 @@ class _TranslationsSettingsIt extends TranslationsSettingsEn {
 	@override String get showNavBarLabels => 'Mostra etichette barra di navigazione';
 	@override String get showNavBarLabelsDescription => 'Mostra le etichette sotto le icone della barra di navigazione';
 	@override String get startupSection => 'Sezione di avvio';
-	@override String get startupSectionDescription => 'Scegli quale sezione apre Plezy all\'avvio';
+	@override String get startupSectionDescription => 'Scegli quale sezione apre Encorr all\'avvio';
 	@override String get liveTvDefaultFavorites => 'Canali preferiti predefiniti';
 	@override String get liveTvDefaultFavoritesDescription => 'Mostra solo i canali preferiti all\'apertura della TV dal vivo';
 	@override String get display => 'Schermo';
@@ -770,7 +770,7 @@ class _TranslationsProfilesIt extends TranslationsProfilesEn {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Aggiungi profilo Plezy';
+	@override String get addEncorrProfile => 'Aggiungi profilo Encorr';
 	@override String get switchingProfile => 'Cambio profilo…';
 	@override String get deleteThisProfileTitle => 'Eliminare questo profilo?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Rimuovi ${displayName}. Le connessioni non sono interessate.';
@@ -845,7 +845,7 @@ class _TranslationsConnectionsIt extends TranslationsConnectionsEn {
 	@override String sessionExpiredMany({required Object count}) => 'Sessione scaduta per ${count} server';
 	@override String get signInAgain => 'Accedi di nuovo';
 	@override String get editJellyfinTitle => 'Modifica connessione Jellyfin';
-	@override String editJellyfinIntro({required Object serverName}) => 'Aggiungi o rimuovi URL per ${serverName}. Plezy userà l\'URL raggiungibile con la latenza più bassa.';
+	@override String editJellyfinIntro({required Object serverName}) => 'Aggiungi o rimuovi URL per ${serverName}. Encorr userà l\'URL raggiungibile con la latenza più bassa.';
 }
 
 // Path: discover
@@ -1562,11 +1562,11 @@ class _TranslationsTraktIt extends TranslationsTraktEn {
 	@override String get connected => 'Connesso';
 	@override String connectedAs({required Object username}) => 'Connesso come @${username}';
 	@override String get disconnectConfirm => 'Disconnettere l\'account Trakt?';
-	@override String get disconnectConfirmBody => 'Plezy smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.';
+	@override String get disconnectConfirmBody => 'Encorr smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.';
 	@override String get scrobble => 'Scrobbling in tempo reale';
 	@override String get scrobbleDescription => 'Invia eventi di riproduzione, pausa e arresto a Trakt durante la riproduzione.';
 	@override String get watchedSync => 'Sincronizza stato visualizzato';
-	@override String get watchedSyncDescription => 'Quando segni elementi come visti in Plezy, vengono segnati anche su Trakt.';
+	@override String get watchedSyncDescription => 'Quando segni elementi come visti in Encorr, vengono segnati anche su Trakt.';
 }
 
 // Path: trackers
@@ -1583,7 +1583,7 @@ class _TranslationsTrackersIt extends TranslationsTrackersEn {
 	@override String get scrobble => 'Traccia i progressi automaticamente';
 	@override String get scrobbleDescription => 'Aggiorna la tua lista quando finisci un episodio o un film.';
 	@override String disconnectConfirm({required Object service}) => 'Disconnettere ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'Plezy smetterà di aggiornare ${service}. Riconnetti quando vuoi.';
+	@override String disconnectConfirmBody({required Object service}) => 'Encorr smetterà di aggiornare ${service}. Riconnetti quando vuoi.';
 	@override String connectFailed({required Object service}) => 'Impossibile connettersi a ${service}. Riprova.';
 	@override late final _TranslationsTrackersServicesIt services = _TranslationsTrackersServicesIt._(_root);
 	@override late final _TranslationsTrackersDeviceCodeIt deviceCode = _TranslationsTrackersDeviceCodeIt._(_root);
@@ -1779,19 +1779,19 @@ class _TranslationsCompanionRemotePairingIt extends TranslationsCompanionRemoteP
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'I dispositivi Plezy con lo stesso account Plex appaiono qui';
+	@override String get discoveryDescription => 'I dispositivi Encorr con lo stesso account Plex appaiono qui';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Connessione...';
 	@override String get searchingForDevices => 'Ricerca dispositivi...';
 	@override String get noDevicesFound => 'Nessun dispositivo trovato nella tua rete';
-	@override String get noDevicesHint => 'Apri Plezy su desktop e usa lo stesso WiFi';
+	@override String get noDevicesHint => 'Apri Encorr su desktop e usa lo stesso WiFi';
 	@override String get availableDevices => 'Dispositivi disponibili';
 	@override String get manualConnection => 'Connessione manuale';
 	@override String get cryptoInitFailed => 'Impossibile avviare la connessione sicura. Accedi prima a Plex.';
 	@override String get validationHostRequired => 'Inserisci l\'indirizzo host';
 	@override String get validationHostFormat => 'Il formato deve essere IP:porta (es. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Connessione scaduta. Usa la stessa rete su entrambi i dispositivi.';
-	@override String get sessionNotFound => 'Dispositivo non trovato. Assicurati che Plezy sia in esecuzione sull\'host.';
+	@override String get sessionNotFound => 'Dispositivo non trovato. Assicurati che Encorr sia in esecuzione sull\'host.';
 	@override String get authFailed => 'Autenticazione non riuscita. Entrambi i dispositivi devono usare lo stesso account Plex.';
 	@override String failedToConnect({required Object error}) => 'Connessione fallita: ${error}';
 }
@@ -1866,7 +1866,7 @@ class _TranslationsTrackersDeviceCodeIt extends TranslationsTrackersDeviceCodeEn
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Attiva Plezy su ${service}';
+	@override String title({required Object service}) => 'Attiva Encorr su ${service}';
 	@override String body({required Object url}) => 'Visita ${url} e inserisci questo codice:';
 	@override String openToActivate({required Object service}) => 'Apri ${service} per attivare';
 	@override String get waitingForAuthorization => 'In attesa di autorizzazione…';
@@ -1915,7 +1915,7 @@ class _TranslationsTrackersLibraryFilterIt extends TranslationsTrackersLibraryFi
 extension on TranslationsIt {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'Plezy',
+			'app.title' => 'Encorr',
 			'auth.signIn' => 'Accedi',
 			'auth.signInWithPlex' => 'Accedi con Plex',
 			'auth.showQRCode' => 'Mostra QR Code',
@@ -1991,7 +1991,7 @@ extension on TranslationsIt {
 			'update.latestVersion' => 'La versione installata è l\'ultima disponibile',
 			'update.checkFailed' => 'Impossibile controllare gli aggiornamenti',
 			'settings.title' => 'Impostazioni',
-			'settings.supportDeveloper' => 'Supporta Plezy',
+			'settings.supportDeveloper' => 'Supporta Encorr',
 			'settings.supportDeveloperDescription' => 'Dona tramite Liberapay per finanziare lo sviluppo',
 			'settings.language' => 'Lingua',
 			'settings.theme' => 'Tema',
@@ -2096,7 +2096,7 @@ extension on TranslationsIt {
 			'settings.importSettingsConfirm' => 'Questa azione sostituirà le impostazioni attuali. Continuare?',
 			'settings.importSettingsSuccess' => 'Impostazioni importate',
 			'settings.importSettingsFailed' => 'Impossibile importare le impostazioni',
-			'settings.importSettingsInvalidFile' => 'Questo file non è un\'esportazione Plezy valida',
+			'settings.importSettingsInvalidFile' => 'Questo file non è un\'esportazione Encorr valida',
 			'settings.importSettingsNoUser' => 'Accedi prima di importare le impostazioni',
 			'settings.shortcutsReset' => 'Scorciatoie ripristinate alle impostazioni predefinite',
 			'settings.about' => 'Informazioni',
@@ -2177,7 +2177,7 @@ extension on TranslationsIt {
 			'settings.forceTvMode' => 'Forza modalità TV',
 			'settings.forceTvModeDescription' => 'Forza layout TV. Per dispositivi non rilevati automaticamente. Richiede riavvio.',
 			'settings.startInFullscreen' => 'Avvia a schermo intero',
-			'settings.startInFullscreenDescription' => 'Apri Plezy a schermo intero all\'avvio',
+			'settings.startInFullscreenDescription' => 'Apri Encorr a schermo intero all\'avvio',
 			'settings.exitFullscreenOnPlayerClose' => 'Esci dallo schermo intero alla chiusura del player',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Esci automaticamente dallo schermo intero quando il lettore video viene chiuso',
 			'settings.autoHidePerformanceOverlay' => 'Nascondi automaticamente overlay prestazioni',
@@ -2185,7 +2185,7 @@ extension on TranslationsIt {
 			'settings.showNavBarLabels' => 'Mostra etichette barra di navigazione',
 			'settings.showNavBarLabelsDescription' => 'Mostra le etichette sotto le icone della barra di navigazione',
 			'settings.startupSection' => 'Sezione di avvio',
-			'settings.startupSectionDescription' => 'Scegli quale sezione apre Plezy all\'avvio',
+			'settings.startupSectionDescription' => 'Scegli quale sezione apre Encorr all\'avvio',
 			'settings.liveTvDefaultFavorites' => 'Canali preferiti predefiniti',
 			'settings.liveTvDefaultFavoritesDescription' => 'Mostra solo i canali preferiti all\'apertura della TV dal vivo',
 			'settings.display' => 'Schermo',
@@ -2452,7 +2452,7 @@ extension on TranslationsIt {
 			'mpvConfig.confirmDeletePreset' => 'Sei sicuro di voler eliminare questo preset?',
 			'mpvConfig.configPlaceholder' => 'gpu-api=vulkan\nhwdec=auto\n# comment',
 			'dialog.confirmAction' => 'Conferma azione',
-			'profiles.addPlezyProfile' => 'Aggiungi profilo Plezy',
+			'profiles.addEncorrProfile' => 'Aggiungi profilo Encorr',
 			'profiles.switchingProfile' => 'Cambio profilo…',
 			'profiles.deleteThisProfileTitle' => 'Eliminare questo profilo?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Rimuovi ${displayName}. Le connessioni non sono interessate.',
@@ -2518,7 +2518,7 @@ extension on TranslationsIt {
 			'connections.sessionExpiredMany' => ({required Object count}) => 'Sessione scaduta per ${count} server',
 			'connections.signInAgain' => 'Accedi di nuovo',
 			'connections.editJellyfinTitle' => 'Modifica connessione Jellyfin',
-			'connections.editJellyfinIntro' => ({required Object serverName}) => 'Aggiungi o rimuovi URL per ${serverName}. Plezy userà l\'URL raggiungibile con la latenza più bassa.',
+			'connections.editJellyfinIntro' => ({required Object serverName}) => 'Aggiungi o rimuovi URL per ${serverName}. Encorr userà l\'URL raggiungibile con la latenza più bassa.',
 			'discover.title' => 'Esplora',
 			'discover.switchProfile' => 'Cambia profilo',
 			'discover.noContentAvailable' => 'Nessun contenuto disponibile',
@@ -2915,19 +2915,19 @@ extension on TranslationsIt {
 			'companionRemote.session.startServer' => 'Avvia server',
 			'companionRemote.session.stopServer' => 'Arresta server',
 			'companionRemote.session.minimize' => 'Riduci',
-			'companionRemote.pairing.discoveryDescription' => 'I dispositivi Plezy con lo stesso account Plex appaiono qui',
+			'companionRemote.pairing.discoveryDescription' => 'I dispositivi Encorr con lo stesso account Plex appaiono qui',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Connessione...',
 			'companionRemote.pairing.searchingForDevices' => 'Ricerca dispositivi...',
 			'companionRemote.pairing.noDevicesFound' => 'Nessun dispositivo trovato nella tua rete',
-			'companionRemote.pairing.noDevicesHint' => 'Apri Plezy su desktop e usa lo stesso WiFi',
+			'companionRemote.pairing.noDevicesHint' => 'Apri Encorr su desktop e usa lo stesso WiFi',
 			'companionRemote.pairing.availableDevices' => 'Dispositivi disponibili',
 			'companionRemote.pairing.manualConnection' => 'Connessione manuale',
 			'companionRemote.pairing.cryptoInitFailed' => 'Impossibile avviare la connessione sicura. Accedi prima a Plex.',
 			'companionRemote.pairing.validationHostRequired' => 'Inserisci l\'indirizzo host',
 			'companionRemote.pairing.validationHostFormat' => 'Il formato deve essere IP:porta (es. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Connessione scaduta. Usa la stessa rete su entrambi i dispositivi.',
-			'companionRemote.pairing.sessionNotFound' => 'Dispositivo non trovato. Assicurati che Plezy sia in esecuzione sull\'host.',
+			'companionRemote.pairing.sessionNotFound' => 'Dispositivo non trovato. Assicurati che Encorr sia in esecuzione sull\'host.',
 			'companionRemote.pairing.authFailed' => 'Autenticazione non riuscita. Entrambi i dispositivi devono usare lo stesso account Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Connessione fallita: ${error}',
 			'companionRemote.remote.disconnectConfirm' => 'Vuoi disconnetterti dalla sessione remota?',
@@ -3118,11 +3118,11 @@ extension on TranslationsIt {
 			'trakt.connected' => 'Connesso',
 			'trakt.connectedAs' => ({required Object username}) => 'Connesso come @${username}',
 			'trakt.disconnectConfirm' => 'Disconnettere l\'account Trakt?',
-			'trakt.disconnectConfirmBody' => 'Plezy smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.',
+			'trakt.disconnectConfirmBody' => 'Encorr smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.',
 			'trakt.scrobble' => 'Scrobbling in tempo reale',
 			'trakt.scrobbleDescription' => 'Invia eventi di riproduzione, pausa e arresto a Trakt durante la riproduzione.',
 			'trakt.watchedSync' => 'Sincronizza stato visualizzato',
-			'trakt.watchedSyncDescription' => 'Quando segni elementi come visti in Plezy, vengono segnati anche su Trakt.',
+			'trakt.watchedSyncDescription' => 'Quando segni elementi come visti in Encorr, vengono segnati anche su Trakt.',
 			'trackers.title' => 'Tracker',
 			'trackers.hubSubtitle' => 'Sincronizza l\'avanzamento di visione con Trakt e altri servizi.',
 			'trackers.notConnected' => 'Non connesso',
@@ -3130,12 +3130,12 @@ extension on TranslationsIt {
 			'trackers.scrobble' => 'Traccia i progressi automaticamente',
 			'trackers.scrobbleDescription' => 'Aggiorna la tua lista quando finisci un episodio o un film.',
 			'trackers.disconnectConfirm' => ({required Object service}) => 'Disconnettere ${service}?',
-			'trackers.disconnectConfirmBody' => ({required Object service}) => 'Plezy smetterà di aggiornare ${service}. Riconnetti quando vuoi.',
+			'trackers.disconnectConfirmBody' => ({required Object service}) => 'Encorr smetterà di aggiornare ${service}. Riconnetti quando vuoi.',
 			'trackers.connectFailed' => ({required Object service}) => 'Impossibile connettersi a ${service}. Riprova.',
 			'trackers.services.mal' => 'MyAnimeList',
 			'trackers.services.anilist' => 'AniList',
 			'trackers.services.simkl' => 'Simkl',
-			'trackers.deviceCode.title' => ({required Object service}) => 'Attiva Plezy su ${service}',
+			'trackers.deviceCode.title' => ({required Object service}) => 'Attiva Encorr su ${service}',
 			'trackers.deviceCode.body' => ({required Object url}) => 'Visita ${url} e inserisci questo codice:',
 			'trackers.deviceCode.openToActivate' => ({required Object service}) => 'Apri ${service} per attivare',
 			'trackers.deviceCode.waitingForAuthorization' => 'In attesa di autorizzazione…',

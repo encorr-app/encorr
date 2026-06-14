@@ -14,7 +14,7 @@ class FocusTheme {
   static const double focusGlowSpreadRadius = 1.5;
 
   static Color getFocusBorderColor(BuildContext context) {
-    return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).extension<MonoTokens>()?.accent ?? Theme.of(context).colorScheme.primary;
   }
 
   static Duration getAnimationDuration(BuildContext context) {

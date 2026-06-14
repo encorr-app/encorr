@@ -5,12 +5,12 @@ import 'fullscreen_state_manager.dart';
 /// Windows-only native window wrapper. Exposes a monitor-aware fullscreen
 /// implementation that lives in the Win32 runner (windows/runner/flutter_window.cpp)
 /// as a workaround for window_manager's multi-monitor fullscreen bug
-/// (edde746/plezy#880).
+/// (encorr-app/encorr#880).
 ///
 /// No-op on non-Windows platforms — callers should keep using
 /// `MacOSWindowService` on macOS and `window_manager` on Linux.
 class NativeWindowService {
-  static const _channel = MethodChannel('plezy/window');
+  static const _channel = MethodChannel('encorr/window');
   static bool _initialized = false;
 
   /// Hook the native → Dart callback that keeps [FullscreenStateManager] in

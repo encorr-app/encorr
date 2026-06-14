@@ -6,7 +6,7 @@ import '../../models.dart';
 import '../player_base.dart';
 
 /// Android inline/background trailer player. Renders into a Flutter [Texture]
-/// via a dedicated native MPV instance on `com.plezy/inline_player`, separate
+/// via a dedicated native MPV instance on `com.encorr/inline_player`, separate
 /// from the singleton full-screen ExoPlayer/MPV cores.
 class PlayerInlineAndroid extends PlayerBase {
   int? _textureIdValue;
@@ -14,8 +14,8 @@ class PlayerInlineAndroid extends PlayerBase {
   @override
   int? get textureId => _textureIdValue;
 
-  static const _methodChannel = MethodChannel('com.plezy/inline_player');
-  static const _eventChannel = EventChannel('com.plezy/inline_player/events');
+  static const _methodChannel = MethodChannel('com.encorr/inline_player');
+  static const _eventChannel = EventChannel('com.encorr/inline_player/events');
 
   @override
   MethodChannel get methodChannel => _methodChannel;

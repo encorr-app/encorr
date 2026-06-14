@@ -69,7 +69,7 @@ val downloadLibdovi by tasks.registering {
 }
 
 android {
-  namespace = "com.edde746.plezy"
+  namespace = "app.encorr.encorr"
   compileSdk = flutter.compileSdkVersion
   ndkVersion = flutter.ndkVersion
 
@@ -83,7 +83,7 @@ android {
   }
 
   defaultConfig {
-    applicationId = "com.edde746.plezy"
+    applicationId = "app.encorr.encorr"
     // You can update the following values to match your application needs.
     // For more information, see: https://flutter.dev/to/review-gradle-config.
     minSdk = 25 // Fire OS 6.x (API 25); overrides libmpv-android's minSdk=26

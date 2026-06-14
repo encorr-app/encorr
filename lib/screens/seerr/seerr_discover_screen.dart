@@ -17,9 +17,10 @@ import '../../utils/debouncer.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
 import '../settings/seerr_settings_screen.dart';
+import 'seerr_connect_prompt.dart';
 import 'seerr_widgets.dart';
 
-/// Seerr "Discover+" tab: Trending / Popular Movies / Popular TV /
+/// Seerr Requests tab: Trending / Popular Movies / Popular TV /
 /// Your Requests rails. On TV the focused card drives a full-bleed
 /// spotlight backdrop behind the rails.
 class SeerrDiscoverScreen extends StatefulWidget {
@@ -260,38 +261,10 @@ class SeerrDiscoverScreenState extends State<SeerrDiscoverScreen>
   }
 
   Widget _buildSignedOutState(SeerrProvider provider) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppIcon(Symbols.travel_explore_rounded, size: 56, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text('Discover with Seerr', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text(
-              provider.isConfigured
-                  ? 'Sign in to your Seerr server to browse trending titles and request new content.'
-                  : 'Connect a Seerr server to browse trending titles and request new content.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 20),
-            FocusableButton(
-              autofocus: PlatformDetector.isTV(),
-              onPressed: _openSeerrSettings,
-              onNavigateLeft: _navigateToSidebar,
-              child: FilledButton.icon(
-                onPressed: _openSeerrSettings,
-                icon: const Icon(Symbols.settings_rounded),
-                label: const Text('Open Seerr settings'),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return SeerrConnectPrompt(
+      autofocus: true,
+      onNavigateLeft: _navigateToSidebar,
+      onOpenSettings: _openSeerrSettings,
     );
   }
 

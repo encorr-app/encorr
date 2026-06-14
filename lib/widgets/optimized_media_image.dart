@@ -6,7 +6,7 @@ import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:plezy/widgets/app_icon.dart';
+import 'package:encorr/widgets/app_icon.dart';
 
 import '../media/media_server_client.dart';
 import '../services/device_performance.dart';
@@ -310,7 +310,7 @@ class OptimizedMediaImage extends StatelessWidget {
         imageUrl,
         cacheKey: effectiveCacheKey,
         cacheManager: PlexImageCacheManager.instance,
-        headers: const {'User-Agent': 'Plezy'},
+        headers: const {'User-Agent': 'Encorr'},
         maxHeight: memHeight,
       ),
       width: width,

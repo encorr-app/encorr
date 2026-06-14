@@ -15,7 +15,7 @@ import 'mal_session.dart';
 
 /// MyAnimeList authentication.
 ///
-/// New sessions come from the Plezy relay's OAuth proxy (PKCE is server-side).
+/// New sessions come from the Encorr relay's OAuth proxy (PKCE is server-side).
 /// Refreshes are direct public-client calls against MAL's token endpoint —
 /// no proxy needed because refresh requires no redirect.
 class MalAuthService extends OAuthProxyAuthServiceBase<MalSession> {

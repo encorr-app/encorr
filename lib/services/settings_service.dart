@@ -6,7 +6,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import '../models/hotkey_model.dart';
 import 'image_cache_service.dart';
-import 'package:plezy/utils/app_logger.dart';
+import 'package:encorr/utils/app_logger.dart';
 import '../i18n/strings.g.dart';
 import '../models/mpv_config_models.dart';
 import '../models/external_player_models.dart';
@@ -376,7 +376,7 @@ class SettingsService extends BaseSharedPreferencesService {
   static const matchDynamicRange = BoolPref('match_dynamic_range');
 
   // ---------------------------------------------------------------------
-  // Plezy-Seerr fork additions (glass UI + trailers)
+  // Encorr fork additions (glass UI + trailers)
   // ---------------------------------------------------------------------
   /// Backdrop-blur glass chrome (GlassPanel). Independent of [visualEffects]:
   /// the reduced performance tier always disables blur regardless of this.

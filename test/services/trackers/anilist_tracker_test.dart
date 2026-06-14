@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
-import 'package:plezy/models/trackers/anime_ids.dart';
-import 'package:plezy/models/trackers/tracker_context.dart';
-import 'package:plezy/services/trackers/anilist/anilist_session.dart';
-import 'package:plezy/services/trackers/anilist/anilist_tracker.dart';
-import 'package:plezy/utils/external_ids.dart';
+import 'package:encorr/models/trackers/anime_ids.dart';
+import 'package:encorr/models/trackers/tracker_context.dart';
+import 'package:encorr/services/trackers/anilist/anilist_session.dart';
+import 'package:encorr/services/trackers/anilist/anilist_tracker.dart';
+import 'package:encorr/utils/external_ids.dart';
 
 AnilistSession _session() {
   final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;

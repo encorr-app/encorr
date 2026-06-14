@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,16 +7,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:plezy/exceptions/media_server_exceptions.dart';
-import 'package:plezy/media/download_resolution.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/services/download_artwork_helpers.dart';
-import 'package:plezy/services/download_artwork_service.dart';
-import 'package:plezy/services/download_storage_service.dart';
-import 'package:plezy/services/settings_service.dart';
-import 'package:plezy/utils/media_server_http_client.dart';
+import 'package:encorr/exceptions/media_server_exceptions.dart';
+import 'package:encorr/media/download_resolution.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/services/download_artwork_helpers.dart';
+import 'package:encorr/services/download_artwork_service.dart';
+import 'package:encorr/services/download_storage_service.dart';
+import 'package:encorr/services/settings_service.dart';
+import 'package:encorr/utils/media_server_http_client.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../test_helpers/prefs.dart';

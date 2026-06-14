@@ -1,25 +1,25 @@
 import 'dart:convert';
-import 'package:plezy/media/ids.dart';
+import 'package:encorr/media/ids.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:plezy/media/media_backend.dart';
-import 'package:plezy/media/media_item.dart';
-import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_server_client.dart';
-import 'package:plezy/models/trackers/anime_lists_mapping.dart';
-import 'package:plezy/models/trackers/fribb_mapping_row.dart';
-import 'package:plezy/services/trackers/anime_lists_mapping_store.dart';
-import 'package:plezy/services/trackers/anilist/anilist_session.dart';
-import 'package:plezy/services/trackers/anilist/anilist_tracker.dart';
-import 'package:plezy/services/trackers/fribb_mapping_store.dart';
-import 'package:plezy/services/trackers/mal/mal_session.dart';
-import 'package:plezy/services/trackers/mal/mal_tracker.dart';
-import 'package:plezy/services/trackers/simkl/simkl_session.dart';
-import 'package:plezy/services/trackers/simkl/simkl_tracker.dart';
-import 'package:plezy/services/trackers/tracker_coordinator.dart';
-import 'package:plezy/utils/external_ids.dart';
+import 'package:encorr/media/media_backend.dart';
+import 'package:encorr/media/media_item.dart';
+import 'package:encorr/media/media_kind.dart';
+import 'package:encorr/media/media_server_client.dart';
+import 'package:encorr/models/trackers/anime_lists_mapping.dart';
+import 'package:encorr/models/trackers/fribb_mapping_row.dart';
+import 'package:encorr/services/trackers/anime_lists_mapping_store.dart';
+import 'package:encorr/services/trackers/anilist/anilist_session.dart';
+import 'package:encorr/services/trackers/anilist/anilist_tracker.dart';
+import 'package:encorr/services/trackers/fribb_mapping_store.dart';
+import 'package:encorr/services/trackers/mal/mal_session.dart';
+import 'package:encorr/services/trackers/mal/mal_tracker.dart';
+import 'package:encorr/services/trackers/simkl/simkl_session.dart';
+import 'package:encorr/services/trackers/simkl/simkl_tracker.dart';
+import 'package:encorr/services/trackers/tracker_coordinator.dart';
+import 'package:encorr/utils/external_ids.dart';
 
 class _FakeMediaServerClient implements MediaServerClient {
   @override
